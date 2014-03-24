@@ -16,109 +16,78 @@
  *          p r e e t . w i k i @ g m a i l . c o m
  */
 
-/**
- * @file
- * @brief This is the application entry point.
- * 			FreeRTOS and stdio printf is pre-configured to use uart0_min.h before main() enters.
- * 			@see L0_LowLevel/lpc_sys.h if you wish to override printf/scanf functions.
- *
- * @note  printf of %f may be turned off to save memory, this can be configured at sys_config.h
- */
 #include "tasks.hpp"
-#include "examples/examples.hpp"
+#include "uart0_min.h"
+#include "queue.h"
+#include "io.hpp"
+#include <stdio.h>
+#include <math.h>
+#include "ServoController.hpp"
 
+ServoController *g_servos = 0;
 
+void accel_task(void *)
+{
+    //Get orientation from accelerometer
+    //Put that orientation onto a queue
+    int16_t x,y,z;
+    Acceleration_Sensor &as = Acceleration_Sensor::getInstance();
+    float orientation;
+    float magnitude;
+    float axisVal;
+    while (1)
+    {
+        x = as.getX();
+        y = as.getY();
+        z = as.getZ();
 
-/**
- * The main() creates tasks or "threads".  See the documentation of scheduler_task class at cpp_task.hpp
- * for details.  There is a very simple example towards the beginning of this class's declaration.
- *
- * @warning SPI #1 bus usage notes (interfaced to SD & Flash):
- *      - You can read/write files from multiple tasks because it automatically goes through SPI semaphore.
- *      - If you are going to use the SPI Bus in a FreeRTOS task, you need to use the API at L4_IO/fat/spi_sem.h
- *
- * @warning SPI #0 usage notes (Nordic wireless)
- *      - This bus is more tricky to use because if FreeRTOS is not running, the RIT interrupt may use the bus.
- *      - If FreeRTOS is running, then wireless task may use it.
- *        In either case, you should avoid using this bus or interfacing to external components because
- *        there is no semaphore configured for this bus and it should be used exclusively by nordic wireless.
- */
+        magnitude = sqrt(x*x + y*y + z*z);
+        axisVal = y;
+
+        //z positive is up
+        //orientation is a value between -1.0f, and 1.0f
+        //1.0f means x faces up
+        //-1.0f means x faces down
+
+        orientation = (axisVal / magnitude);
+        //printf("Got orientation %f\n", orientation);
+
+        //set the next servo position
+        g_servos->setNextPosition(ServoController::pwm1, orientation);
+
+        vTaskDelay(20);
+    }
+}
+
+void debug_trigger(void *)
+{
+    const uint16_t TRIG_PIN = (1 << 6);
+    LPC_GPIO2->FIODIR |= TRIG_PIN; //p2.6 is output
+    //toggle pin voltage every 20 ms
+    while (1)
+    {
+        LPC_GPIO2->FIOSET = TRIG_PIN;
+        vTaskDelay(10);
+        LPC_GPIO2->FIOCLR = TRIG_PIN;
+        vTaskDelay(10);
+    }
+}
+
 int main(void)
 {
-    /**
-     * A few basic tasks for this bare-bone system :
-     *      1.  Terminal task provides gateway to interact with the board through UART terminal.
-     *      2.  Remote task allows you to use remote control to interact with the board.
-     *      3.  Wireless task responsible to receive, retry, and handle mesh network.
-     *
-     * Disable remote task if you are not using it.  Also, it needs ENABLE_TELEMETRY
-     * such that it can save remote control codes to non-volatile memory.  IR remote
-     * control codes can be learned by typing "learn" command.
-     */
-    scheduler_add_task(new terminalTask(PRIORITY_HIGH));
-    scheduler_add_task(new remoteTask  (PRIORITY_LOW));
+    terminalTask *term = new terminalTask(PRIORITY_HIGH);
+    g_servos = new ServoController();
+    TaskHandle_t accelHandle;
+    TaskHandle_t debugHandle;
 
-    /* Consumes very little CPU, but need highest priority to handle mesh network ACKs */
-    scheduler_add_task(new wirelessTask(PRIORITY_CRITICAL));
+    scheduler_add_task(term);
 
-    /* Your tasks should probably used PRIORITY_MEDIUM or PRIORITY_LOW because you
-     * want the terminal task to always be responsive so you can poke around in
-     * case something goes wrong.
-     */
+    g_servos->enablePort(ServoController::pwm1);
 
-    /**
-     * This is a the board demonstration task that can be used to test the board.
-     * This also shows you how to send a wireless packets to other boards.
-     */
-    #if 0
-        scheduler_add_task(new example_io_demo());
-    #endif
+    xTaskCreate(accel_task, "accel_fetch", 1024, 0, PRIORITY_MEDIUM, &accelHandle);
+    xTaskCreate(debug_trigger, "trig", 256, 0, PRIORITY_MEDIUM, &debugHandle);
 
-    /**
-     * Change "#if 0" to "#if 1" to enable examples.
-     * Try these examples one at a time.
-     */
-    #if 0
-        scheduler_add_task(new example_task());
-        scheduler_add_task(new example_alarm());
-        scheduler_add_task(new example_logger_qset());
-        scheduler_add_task(new example_nv_vars());
-    #endif
 
-    /**
-	 * Try the rx / tx tasks together to see how they queue data to each other.
-	 */
-    #if 0
-        scheduler_add_task(new queue_tx());
-        scheduler_add_task(new queue_rx());
-    #endif
-
-    /**
-     * Another example of shared handles and producer/consumer using a queue.
-     * In this example, producer will produce as fast as the consumer can consume.
-     */
-    #if 0
-        scheduler_add_task(new producer());
-        scheduler_add_task(new consumer());
-    #endif
-
-    /**
-     * If you have RN-XV on your board, you can connect to Wifi using this task.
-     * This does two things for us:
-     *   1.  The task allows us to perform HTTP web requests (@see wifiTask)
-     *   2.  Terminal task can accept commands from TCP/IP through Wifly module.
-     *
-     * To add terminal command channel, add this at terminal.cpp :: taskEntry() function:
-     * @code
-     *     // Assuming Wifly is on Uart3
-     *     addCommandChannel(Uart3::getInstance(), false);
-     * @endcode
-     */
-    #if 0
-        Uart3::getInstance().init(WIFI_BAUD_RATE, WIFI_RXQ_SIZE, WIFI_TXQ_SIZE);
-        scheduler_add_task(new wifiTask(Uart3::getInstance(), PRIORITY_LOW));
-    #endif
-
-    scheduler_start(true); ///< This shouldn't return
+    scheduler_start(true);
     return -1;
 }
