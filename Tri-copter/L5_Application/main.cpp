@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "ServoController.hpp"
+#include "acceleration_sensor.hpp"
 
 ServoController *g_servos = 0;
 

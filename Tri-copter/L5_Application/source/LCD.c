@@ -1,10 +1,10 @@
 #define ZERO	00110000
 #define ONE     00110001
 #define TWO     00110010
-#deinfe Three   00110011
+#define Three   00110011
 #define FOUR 	00110100
 #define FIVE 	00110101
-#deinfe SIX 	00110110
+#define SIX 	00110110
 #define SEVEN	00110111
 #define EIGHT	00111000
 #define NINE	00111001
@@ -13,7 +13,7 @@
 #define B		01000010
 #define C		01000011
 #define D		01000100
-#deinfe E		01000101
+#define E		01000101
 #define F		01000110
 #define G		01000111
 #define H		01001000
@@ -22,11 +22,11 @@
 #define K		01001011
 #define L		01001100
 #define M		01001101
-#deinfe N	 	01001110
+#define N	 	01001110
 #define	O		01001111
 #define P		01010000
 #define Q		01010001
-#deinfe R		01010010
+#define R		01010010
 #define S		01010011
 #define T		01010100
 #define U		01010101
