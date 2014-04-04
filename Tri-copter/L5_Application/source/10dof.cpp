@@ -68,7 +68,7 @@ three_axis_info_t Gyroscope::getXYZ()
     return reading;
 }
 
-void Gyroscope::callibrate()
+void Gyroscope::calibrate()
 {
     //todo?
 }
@@ -105,7 +105,7 @@ three_axis_info_t Magnometer::getXYZ()
     return reading;
 }
 
-void Magnometer::callibrate()
+void Magnometer::calibrate()
 {
     //todo?
 }
