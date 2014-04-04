@@ -61,53 +61,53 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-Tri-copter.hex \
+Tricopter.hex \
 
 SECONDARY_LIST += \
-Tri-copter.lst \
+Tricopter.lst \
 
 SECONDARY_SIZE += \
-Tri-copter.siz \
+Tricopter.siz \
 
 
 # All Target
-all: Tri-copter.elf secondary-outputs
+all: Tricopter.elf secondary-outputs
 
 # Tool invocations
-Tri-copter.elf: $(OBJS) $(USER_OBJS)
+Tricopter.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C++ Linker'
-	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -T ../loader.ld -nostartfiles -Xlinker --gc-sections -Wl,-Map,"Tri-copter.map" -specs=nano.specs -o "Tri-copter.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -T ../loader.ld -nostartfiles -Xlinker --gc-sections -Wl,-Map,"Tricopter.map" -specs=nano.specs -o "Tricopter.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
 
-Tri-copter.hex: Tri-copter.elf
+Tricopter.hex: Tricopter.elf
 	@echo 'Invoking: Cross ARM GNU Create Flash Image'
-	arm-none-eabi-objcopy "Tri-copter.elf" -O ihex  "Tri-copter.hex"
+	arm-none-eabi-objcopy "Tricopter.elf" -O ihex  "Tricopter.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Tri-copter.lst: Tri-copter.elf
+Tricopter.lst: Tricopter.elf
 	@echo 'Invoking: Cross ARM GNU Create Listing'
-	arm-none-eabi-objdump "Tri-copter.elf" --source --all-headers --demangle --line-numbers --wide > "Tri-copter.lst"
+	arm-none-eabi-objdump "Tricopter.elf" --source --all-headers --demangle --line-numbers --wide > "Tricopter.lst"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Tri-copter.siz: Tri-copter.elf
+Tricopter.siz: Tricopter.elf
 	@echo 'Invoking: Cross ARM GNU Print Size'
-	arm-none-eabi-size  --format=berkeley "Tri-copter.elf"
+	arm-none-eabi-size  --format=berkeley "Tricopter.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(SECONDARY_SIZE)$(C++_DEPS)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(CC_DEPS)$(SECONDARY_FLASH)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS)$(SECONDARY_LIST)$(S_UPPER_DEPS) Tri-copter.elf
+	-$(RM) $(SECONDARY_SIZE)$(C++_DEPS)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(CC_DEPS)$(SECONDARY_FLASH)$(CPP_DEPS)$(CXX_DEPS)$(C_UPPER_DEPS)$(SECONDARY_LIST)$(S_UPPER_DEPS) Tricopter.elf
 	-@echo ' '
 
 post-build:
 	-@echo 'Create binary file'
-	-arm-none-eabi-objcopy -O binary Tri-copter.elf Tri-copter.bin
+	-arm-none-eabi-objcopy -O binary Tricopter.elf Tricopter.bin
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE)
