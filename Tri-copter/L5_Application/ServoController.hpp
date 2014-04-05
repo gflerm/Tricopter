@@ -13,7 +13,7 @@
  * A servo class that allows a new pulse width value
  * to be put to use immediately
  */
-
+/*
 class ServoController
 {
     public:
@@ -39,5 +39,5 @@ class ServoController
     private:
         uint32_t enableMask;
 };
-
+*/
 #endif /* SERVOTASK_HPP_ */

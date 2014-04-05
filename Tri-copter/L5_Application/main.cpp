@@ -21,13 +21,19 @@
 #include "queue.h"
 #include "io.hpp"
 #include <stdio.h>
-#include <math.h>
-#include "ServoController.hpp"
-#include "acceleration_sensor.hpp"
+//#include "ServoController.hpp"
+//#include "acceleration_sensor.hpp"
+#include "utilities.h"
+#include "task.h"
+#include "10dof.h"
+#include "BM_Controller.hpp"
 
-ServoController *g_servos = 0;
 
-void accel_task(void *)
+
+
+//ServoController *g_servos = 0;
+
+/*void accel_task(void *)
 {
     //Get orientation from accelerometer
     //Put that orientation onto a queue
@@ -68,27 +74,39 @@ void debug_trigger(void *)
     while (1)
     {
         LPC_GPIO2->FIOSET = TRIG_PIN;
-        vTaskDelay(10);
+        delay_ms(1);
         LPC_GPIO2->FIOCLR = TRIG_PIN;
-        vTaskDelay(10);
+        delay_ms(1);
     }
 }
+*/
+//static TaskHandle_t calibration;
 
+//NEED A BETTER SOLUTION FOR KEEPING THIS!
+TaskHandle_t calibration;
+TaskHandle_t display;
+TaskHandle_t bm_calibraiton;
 int main(void)
 {
-    terminalTask *term = new terminalTask(PRIORITY_HIGH);
-    g_servos = new ServoController();
-    TaskHandle_t accelHandle;
-    TaskHandle_t debugHandle;
+	motors Main_motors;
+	balance Main_axis;
+
+
+	terminalTask *term = new terminalTask(PRIORITY_MEDIUM);
+    //g_servos = new ServoController();
+    //TaskHandle_t accelHandle;
+    //TaskHandle_t debugHandle;
 
     scheduler_add_task(term);
+    xTaskCreate(user_calibration, "calibrate", 1024, &Main_axis, PRIORITY_CRITICAL, &calibration);
+    xTaskCreate(calibrate_esc, "bm_calibrate", 512, &Main_motors, PRIORITY_CRITICAL, &bm_calibraiton);
 
-    g_servos->enablePort(ServoController::pwm1);
+    //g_servos->enablePort(ServoController::pwm1);
 
-    xTaskCreate(accel_task, "accel_fetch", 1024, 0, PRIORITY_MEDIUM, &accelHandle);
-    xTaskCreate(debug_trigger, "trig", 256, 0, PRIORITY_MEDIUM, &debugHandle);
+    //xTaskCreate(accel_task, "accel_fetch", 1024, 0, PRIORITY_HIGH, &accelHandle);
+    //xTaskCreate(debug_trigger, "trig", 256, 0,PRIORITY_HIGH, &debugHandle);
 
-
+	//vTaskStartScheduler();
     scheduler_start(true);
     return -1;
 }

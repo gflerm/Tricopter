@@ -28,7 +28,6 @@
 #define SHARED_HANDLES_H__
 
 
-
 /**
  * Enumeration of shared handles
  */

@@ -27,7 +27,11 @@
 
 #include "command_handler.hpp"
 
+//Handle for 10dof value display
+CMD_HANDLER_FUNC(display_handler);
 
+//Handler for 10dof calibration
+CMD_HANDLER_FUNC(calibration_handler);
 
 /// Handler for task list & CPU Information
 CMD_HANDLER_FUNC(taskListHandler);

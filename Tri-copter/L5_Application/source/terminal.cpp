@@ -87,6 +87,11 @@ bool terminalTask::taskEntry()
     cp.addHandler(newFileHandler,"nf",    "Write a new file. Ex: 'nf <file.txt>");
     cp.addHandler(rmHandler,     "rm",    "Remove a file. Ex: 'rm 0:file.txt'");
 
+    //Tri-Copter related Handles
+    cp.addHandler(calibration_handler, "cali", "Used to calibrate sensors");
+    cp.addHandler(display_handler, "display, display current values");
+
+
     // Misc. handlers
     cp.addHandler(i2cIoHandler,   "i2c",   "'i2c read 0x01 0x02' : Reads device 0x01, and register 0x02\n"
                                            "'i2c write 0x01 0x02 0x03' : Writes device 0x01, reg 0x02, data 0x03\n"
