@@ -73,6 +73,12 @@ void Gyroscope::callibrate()
     //todo?
 }
 
+bool Magnometer::init()
+{
+    mI2C.writeRegisters(mOurAddr, 0x10, &configReg_A, 1);
+    mI2C.writeRegisters(mOurAddr, 0x20, &configReg_B, 1);
+}
+
 axis_info_t Magnometer::getX()
 {
     axis_info_t reading;

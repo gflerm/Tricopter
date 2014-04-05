@@ -80,6 +80,18 @@ class Magnometer : private I2C_Device_Base, public SingletonTemplate<Acceleratio
         void callibrate();
 
     private:
+        //Config Reg A
+        //[7:7] unused
+        //[6:5] number of samples to average
+        //[4:2] data rate
+        //[1:0] measurement config
+        const uint8_t configReg_A = 0x78;
+
+        //Config Reg B
+        //[7:5] gain
+        //[4:0] must be cleared
+        const uint8_t configReg_B = 0x00;
+
         /// Private constructor of this Singleton class
         Magnometer() : I2C_Device_Base(c_magno_addr)
         {
