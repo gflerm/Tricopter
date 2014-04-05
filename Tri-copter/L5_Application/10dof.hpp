@@ -58,7 +58,7 @@ class Gyroscope : private I2C_Device_Base, public SingletonTemplate<Acceleration
         axis_info_t getY();  ///< @returns Y-Axis value
         axis_info_t getZ();  ///< @returns Z-Axis value
         three_axis_info_t getXYZ(); //returns 3 values at once
-        void callibrate();
+        void calibrate();
 
     private:
         /// Private constructor of this Singleton class
@@ -77,7 +77,7 @@ class Magnometer : private I2C_Device_Base, public SingletonTemplate<Acceleratio
         axis_info_t getY();  ///< @returns Y-Axis value
         axis_info_t getZ();  ///< @returns Z-Axis value
         three_axis_info_t getXYZ(); //returns 3 values at once
-        void callibrate();
+        void calibrate();
 
     private:
         //Config Reg A
