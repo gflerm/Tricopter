@@ -53,10 +53,21 @@ protected:
         return mI2C.readReg(mOurAddr, reg);
     }
 
+    inline void readRegisters(unsigned char reg, char *data, unsigned int len)
+    {
+        mI2C.readRegisters(mOurAddr, reg, data, len);
+    }
+
     /// Writes a register of this device
     inline void writeReg(unsigned char reg, unsigned char data)
     {
         mI2C.writeReg(mOurAddr, reg, data);
+    }
+
+    //Write multiple registers
+    inline void writeRegisters(unsigned char reg, char *data, unsigned int len)
+    {
+        mI2C.writeRegisters(mOurAddr, reg, data, len);
     }
 
     /// @returns true if the device responds to its address
