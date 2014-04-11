@@ -33,9 +33,9 @@
 using namespace _10dof;
 
 typedef struct {
-        Accelerometer accel_sensor;
-        Gyroscope gyro_sensor;
-        three_axis_info_t orientation;
+        Accelerometer* accel_sensor;
+        Gyroscope* gyro_sensor;
+        three_axis_info_t* orientation;
 } orientation_data_t;
 
 const float ORIENTATION_UPDATE_TIME =  20 / 100000; //ms converted to seconds
@@ -118,29 +118,29 @@ void update_orientation(void* orientation_data)
         startTime = xTaskGetTickCount();
 
         //Grab info from accelerometer and gyroscope
-        accel_data = ((orientation_data_t*)orientation_data)->accel_sensor->getXYZ();
-        gyro_data = ((orientation_data_t*)orientation_data)->gyro_sensor->getXYZ();
+        accel_data = (((orientation_data_t*)orientation_data)->accel_sensor)->getXYZ();
+        gyro_data = (((orientation_data_t*)orientation_data)->gyro_sensor)->getXYZ();
         orientation = *(((orientation_data_t*)orientation_data)->orientation);
 
         //Integrate gyroscope data
-        orientation.x += gyro_data.x * ORIENTATION_UPDATE_TIME;
-        orientation.y += gyro_data.y * ORIENTATION_UPDATE_TIME;
-        orientation.z += gyro_data.z * ORIENTATION_UPDATE_TIME;
+        orientation.x.word += (gyro_data.x.word) * ORIENTATION_UPDATE_TIME;
+        orientation.y.word += (gyro_data.y.word) * ORIENTATION_UPDATE_TIME;
+        orientation.z.word += (gyro_data.z.word) * ORIENTATION_UPDATE_TIME;
 
         //Find the angle from the acceleration data
-        accel_calc.x = atan2((int)accel_data.z, (int)accel_data.x);
-        accel_calc.y = atan2((int)accel_data.z, (int)accel_data.y);
+        accel_calc.x.word = atan2(accel_data.z.word, accel_data.x.word);
+        accel_calc.y.word = atan2(accel_data.z.word, accel_data.y.word);
 
         //If we can trust the accelerometer data, then add it in
-        accel_magnitude = abs((int)accel_data.x) + abs((int)accel_data.y) + abs((int)accel_data.z);
+        accel_magnitude = abs(accel_data.x.word) + abs(accel_data.y.word) + abs(accel_data.z.word);
         if ( accel_magnitude > ACCEL_MAGNITUDE_LOW && accel_magnitude < ACCEL_MAGNITUDE_HIGH)
         {
             //Complementary filter
             //High pass filter the gyro data, low pass filter the acceleration data
-            orientation.x = (FILTER_PERCENT_HIGH * (orientation.x + gyro_data.x * ORIENTATION_UPDATE_TIME)) +
-                            (FILTER_PERCENT_LOW  * accel_calc.x);
-            orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + gyro_data.y * ORIENTATION_UPDATE_TIME)) +
-                            (FILTER_PERCENT_LOW * accel_calc.y);
+            orientation.x.word = (FILTER_PERCENT_HIGH * (orientation.x.word + gyro_data.x.word * ORIENTATION_UPDATE_TIME)) +
+                            (FILTER_PERCENT_LOW  * accel_calc.x.word);
+            orientation.y.word = (FILTER_PERCENT_HIGH * (orientation.y.word + gyro_data.y.word * ORIENTATION_UPDATE_TIME)) +
+                            (FILTER_PERCENT_LOW * accel_calc.y.word);
             //orientation.z = <<TODO>> use magnetometer if this drifts
         }
 
@@ -160,13 +160,17 @@ int main(void)
 {
 	motors Main_motors;
 	balance Main_axis;
-	Accelerometer accel_sensor;
-	Gyroscope gyro_sensor;
+	three_axis_info_t orientation;
+	Accelerometer &accel_sensor = Accelerometer::getInstance();
+	Gyroscope &gyro_sensor = Gyroscope::getInstance();
+
+	accel_sensor.init();
+	gyro_sensor.init();
 
 	orientation_data_t orientation_data;
     orientation_data.gyro_sensor = &gyro_sensor;
 	orientation_data.accel_sensor = &accel_sensor;
-	orientation_data.orientation = &Main_axis;
+	orientation_data.orientation = &orientation;
 
 	terminalTask *term = new terminalTask(PRIORITY_MEDIUM);
     //g_servos = new ServoController();
