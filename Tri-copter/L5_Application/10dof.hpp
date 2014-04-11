@@ -2,7 +2,7 @@
  * 10dof sensor interface classes
  * Make use of existing I2C_Device_Base class
  */
-
+/*
 #ifndef _10_dof_hpp
 #define _10_dof_hpp
 
@@ -100,5 +100,5 @@ class Magnometer : private I2C_Device_Base, public SingletonTemplate<Acceleratio
 };
 
 }
-
+*/
 #endif

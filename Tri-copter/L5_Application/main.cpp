@@ -21,19 +21,20 @@
 #include "queue.h"
 #include "io.hpp"
 #include <stdio.h>
-//#include "ServoController.hpp"
-//#include "acceleration_sensor.hpp"
+#include <math.h>
+#include "ServoController.hpp"
+#include "acceleration_sensor.hpp"
 #include "utilities.h"
 #include "task.h"
 #include "10dof.h"
-#include "BM_Controller.hpp"
+//#include "BM_Controller.hpp"
 
 
 
 
-//ServoController *g_servos = 0;
+ServoController *g_servos = 0;
 
-/*void accel_task(void *)
+void accel_task(void *)
 {
     //Get orientation from accelerometer
     //Put that orientation onto a queue
@@ -57,7 +58,7 @@
         //-1.0f means x faces down
 
         orientation = (axisVal / magnitude);
-        //printf("Got orientation %f\n", orientation);
+        printf("Got orientation %f\n", orientation);
 
         //set the next servo position
         g_servos->setNextPosition(ServoController::pwm1, orientation);
@@ -79,7 +80,7 @@ void debug_trigger(void *)
         delay_ms(1);
     }
 }
-*/
+
 //static TaskHandle_t calibration;
 
 //NEED A BETTER SOLUTION FOR KEEPING THIS!
@@ -88,23 +89,23 @@ TaskHandle_t display;
 TaskHandle_t bm_calibraiton;
 int main(void)
 {
-	motors Main_motors;
-	balance Main_axis;
+	//motors Main_motors;
+//	balance Main_axis;
 
 
 	terminalTask *term = new terminalTask(PRIORITY_MEDIUM);
-    //g_servos = new ServoController();
-    //TaskHandle_t accelHandle;
-    //TaskHandle_t debugHandle;
+    g_servos = new ServoController();
+    TaskHandle_t accelHandle;
+    TaskHandle_t debugHandle;
 
     scheduler_add_task(term);
-    xTaskCreate(user_calibration, "calibrate", 1024, &Main_axis, PRIORITY_CRITICAL, &calibration);
-    xTaskCreate(calibrate_esc, "bm_calibrate", 512, &Main_motors, PRIORITY_CRITICAL, &bm_calibraiton);
+   // xTaskCreate(user_calibration, "calibrate", 1024, &Main_axis, PRIORITY_CRITICAL, &calibration);
+    //xTaskCreate(calibrate_esc, "bm_calibrate", 512, 0, PRIORITY_CRITICAL, &bm_calibraiton);
 
-    //g_servos->enablePort(ServoController::pwm1);
+    g_servos->enablePort(ServoController::pwm1);
 
-    //xTaskCreate(accel_task, "accel_fetch", 1024, 0, PRIORITY_HIGH, &accelHandle);
-    //xTaskCreate(debug_trigger, "trig", 256, 0,PRIORITY_HIGH, &debugHandle);
+   xTaskCreate(accel_task, "accel_fetch", 1024, 0, PRIORITY_HIGH, &accelHandle);
+   xTaskCreate(debug_trigger, "trig", 256, 0,PRIORITY_HIGH, &debugHandle);
 
 	//vTaskStartScheduler();
     scheduler_start(true);
