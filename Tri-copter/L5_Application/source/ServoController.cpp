@@ -11,7 +11,7 @@
 
     //Help from http://openlpc.com/4e26f1/examples/pwm.lpc17xx
     //and lpc_pwm.hpp/cpp
-/*
+
 ServoController::ServoController():
     enableMask(0)
 {
@@ -23,13 +23,14 @@ ServoController::ServoController():
     LPC_PWM1->IR = 0xff;
 
     //1 microsecond resolution
-    LPC_PWM1->PR = sys_get_cpu_clock() / (4 * 1000000) - 1;
+    //LPC_PWM1->PR = ((sys_get_cpu_clock()*(1000000)))-1;
+
 
     //reset on mr0
     LPC_PWM1->MCR = 1 << 1;
 
     //MR0 holds the PWM period. For 50Hz this is 20ms
-    LPC_PWM1->MR0 = 125; //for 125microseconds
+    LPC_PWM1->MR0 = sys_get_cpu_clock()/50; //for 125microseconds
 
     LPC_PWM1->TCR = (1 << 0) | (1 << 3); // Enable PWM1
     LPC_PWM1->TC = 0; //reset counter
@@ -65,8 +66,8 @@ void ServoController::setNextPosition(pwmType port, float orientation)
     //(-1.0f,1000) (1.0f,2000)
     //m = 1000 / 2 = 500
     //b = 1000 + 500 = 1500
-    pulseWidth = 500.0f * orientation + 1500;
-
+   // pulseWidth = 500.0f * orientation + 1500;
+    pulseWidth = sys_get_cpu_clock() *.001f *((orientation/2)+1.5f);
     switch(port)
     {
         case pwm1: LPC_PWM1->MR1 = pulseWidth; break;
@@ -82,4 +83,4 @@ void ServoController::setNextPosition(pwmType port, float orientation)
     //enable pwm
     LPC_PWM1->LER = 1 << enableMask;
 }
-*/
+
