@@ -70,7 +70,7 @@ void Accelerometer::calibrate()
 
 bool Gyroscope::init()
 {
-    //todo
+    writeReg(0x20, 0b00001111);
     return true;
 }
 
