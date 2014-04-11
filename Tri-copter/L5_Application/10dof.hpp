@@ -30,7 +30,7 @@ typedef union {
         };
 }three_axis_info_t;
 
-class Accelerometer : private I2C_Device_Base, public SingletonTemplate<Acceleration_Sensor>
+class Accelerometer : protected I2C_Device_Base, public SingletonTemplate<Accelerometer>
 {
     public:
         bool init();   ///< Initializes the sensor
@@ -39,17 +39,18 @@ class Accelerometer : private I2C_Device_Base, public SingletonTemplate<Accelera
         axis_info_t getY();  ///< @returns Y-Axis value
         axis_info_t getZ();  ///< @returns Z-Axis value
         three_axis_info_t getXYZ(); //returns 3 values at once
-        void callibrate();
+        char whoami();
+        void calibrate();
 
     private:
         /// Private constructor of this Singleton class
         Accelerometer() : I2C_Device_Base(c_accel_addr)
         {
         }
-        friend class SingletonTemplate<Acceleration_Sensor>;  ///< Friend class used for Singleton Template
+        friend class SingletonTemplate<Accelerometer>;  ///< Friend class used for Singleton Template
 };
 
-class Gyroscope : private I2C_Device_Base, public SingletonTemplate<Acceleration_Sensor>
+class Gyroscope : protected I2C_Device_Base, public SingletonTemplate<Gyroscope>
 {
     public:
         bool init();   ///< Initializes the sensor
@@ -58,6 +59,7 @@ class Gyroscope : private I2C_Device_Base, public SingletonTemplate<Acceleration
         axis_info_t getY();  ///< @returns Y-Axis value
         axis_info_t getZ();  ///< @returns Z-Axis value
         three_axis_info_t getXYZ(); //returns 3 values at once
+        char whoami();
         void calibrate();
 
     private:
@@ -65,10 +67,10 @@ class Gyroscope : private I2C_Device_Base, public SingletonTemplate<Acceleration
         Gyroscope() : I2C_Device_Base(c_gyro_addr)
         {
         }
-        friend class SingletonTemplate<Acceleration_Sensor>;  ///< Friend class used for Singleton Template
+        friend class SingletonTemplate<Gyroscope>;  ///< Friend class used for Singleton Template
 };
 
-class Magnometer : private I2C_Device_Base, public SingletonTemplate<Acceleration_Sensor>
+class Magnometer : protected I2C_Device_Base, public SingletonTemplate<Magnometer>
 {
     public:
         bool init();   ///< Initializes the sensor
@@ -85,18 +87,18 @@ class Magnometer : private I2C_Device_Base, public SingletonTemplate<Acceleratio
         //[6:5] number of samples to average
         //[4:2] data rate
         //[1:0] measurement config
-        const uint8_t configReg_A = 0x78;
+        static const uint8_t configReg_A = 0x78;
 
         //Config Reg B
         //[7:5] gain
         //[4:0] must be cleared
-        const uint8_t configReg_B = 0x00;
+        static const uint8_t configReg_B = 0x00;
 
         /// Private constructor of this Singleton class
         Magnometer() : I2C_Device_Base(c_magno_addr)
         {
         }
-        friend class SingletonTemplate<Acceleration_Sensor>;  ///< Friend class used for Singleton Template
+        friend class SingletonTemplate<Magnometer>;  ///< Friend class used for Singleton Template
 };
 
 }
