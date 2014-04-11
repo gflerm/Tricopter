@@ -9,44 +9,23 @@
 #define BM_CONTROLLER_H_
 #include "lpc_pwm.hpp"
 
-#define LEFT_MOTOR 		((class motors*) p)->left_motor
-#define RIGHT_MOTOR 	((class motors*) p)->right_motor
-#define REAR_MOTOR		((class motors*) p)->rear_servo
+#define X_ORIENTATION ((orientation_data_t*) data)->orientation.x.word
+#define Y_OREINTATION ((orientation_data_t*) data)->orientation.y.word
+#define Z_OREINTATION ((orientation_data_t*) data)->orientation.z.word
 
-class motors{
-public:
-PWM *left_motor= new PWM(PWM::pwm2, 16000);
-PWM *right_motor= new PWM(PWM::pwm3, 16000);
-PWM *rear_motor= new PWM(PWM::pwm4, 16000);
-PWM *rear_servo= new PWM(PWM::pwm5, 8000);
-};
 
-void calibrate_esc(void *p){
-	int input;
-	//vTaskSuspend(NULL);
-	while(1){
-	printf("\nMake sure motors are disconnected from power.Press ENTER to begin calibration.\n");
-	scanf("%i", &input);
+void set_base_oreintaiton(void* data){
+    uint16_t x,y,z;
 
-	LEFT_MOTOR->set(100);
-	RIGHT_MOTOR->set(100);
-	REAR_MOTOR->set(100);
 
-	printf("\nNow, provide motors with power, once final beep heard press ENTER\n");
-	scanf("%i", &input);
-
-	LEFT_MOTOR->set(0);
-	RIGHT_MOTOR->set(0);
-	REAR_MOTOR->set(0);
-
-	printf("\nCalibration should now be complete!!!\n");
-	//vTaskSuspend(NULL);
-	}
 }
 
 
 
+void motor_control(void* data){
 
+
+}
 
 
 
