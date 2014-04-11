@@ -92,14 +92,9 @@ void Gyroscope::calibrate()
 
 bool Magnometer::init()
 {
-<<<<<<< HEAD
     writeRegisters(0x10, (char*)&configReg_A, 1);
     writeRegisters(0x20, (char*)&configReg_B, 1);
     return true;
-=======
-    mI2C.writeRegisters(mOurAddr, 0x10, &configReg_A, 1);
-    mI2C.writeRegisters(mOurAddr, 0x20, &configReg_B, 1);
->>>>>>> branch 'master' of https://github.com/carlosfm1989/Tricopter.git
 }
 
 axis_info_t Magnometer::getX()
