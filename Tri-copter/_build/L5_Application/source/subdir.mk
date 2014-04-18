@@ -6,6 +6,7 @@
 CPP_SRCS += \
 ../L5_Application/source/10dof.cpp \
 ../L5_Application/source/ServoController.cpp \
+../L5_Application/source/debug_sensor.cpp \
 ../L5_Application/source/high_level_init.cpp \
 ../L5_Application/source/remote.cpp \
 ../L5_Application/source/terminal.cpp 
@@ -19,6 +20,7 @@ OBJS += \
 ./L5_Application/source/BM_Controller.o \
 ./L5_Application/source/LCD.o \
 ./L5_Application/source/ServoController.o \
+./L5_Application/source/debug_sensor.o \
 ./L5_Application/source/high_level_init.o \
 ./L5_Application/source/remote.o \
 ./L5_Application/source/terminal.o 
@@ -30,6 +32,7 @@ C_DEPS += \
 CPP_DEPS += \
 ./L5_Application/source/10dof.d \
 ./L5_Application/source/ServoController.d \
+./L5_Application/source/debug_sensor.d \
 ./L5_Application/source/high_level_init.d \
 ./L5_Application/source/remote.d \
 ./L5_Application/source/terminal.d 
@@ -39,14 +42,14 @@ CPP_DEPS += \
 L5_Application/source/%.o: ../L5_Application/source/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross ARM C++ Compiler'
-	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -I"C:\Git\projects\Tricopter\Tri-copter" -I"C:\Git\projects\Tricopter\Tri-copter\newlib" -I"C:\Git\projects\Tricopter\Tri-copter\L0_LowLevel" -I"C:\Git\projects\Tricopter\Tri-copter\L1_FreeRTOS" -I"C:\Git\projects\Tricopter\Tri-copter\L1_FreeRTOS\include" -I"C:\Git\projects\Tricopter\Tri-copter\L1_FreeRTOS\portable" -I"C:\Git\projects\Tricopter\Tri-copter\L2_Drivers" -I"C:\Git\projects\Tricopter\Tri-copter\L2_Drivers\base" -I"C:\Git\projects\Tricopter\Tri-copter\L3_Utils" -I"C:\Git\projects\Tricopter\Tri-copter\L3_Utils\tlm" -I"C:\Git\projects\Tricopter\Tri-copter\L4_IO" -I"C:\Git\projects\Tricopter\Tri-copter\L4_IO\fat" -I"C:\Git\projects\Tricopter\Tri-copter\L4_IO\wireless" -I"C:\Git\projects\Tricopter\Tri-copter\L5_Application" -fno-exceptions -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -c -o "$@" "$<"
+	arm-none-eabi-g++ -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -I"C:\Users\sloretz\git\Tricopter\Tri-copter" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\newlib" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L0_LowLevel" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L1_FreeRTOS" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L1_FreeRTOS\include" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L1_FreeRTOS\portable" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L2_Drivers" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L2_Drivers\base" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L3_Utils" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L3_Utils\tlm" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L4_IO" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L4_IO\fat" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L4_IO\wireless" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L5_Application" -fno-exceptions -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
 L5_Application/source/%.o: ../L5_Application/source/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross ARM C Compiler'
-	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -I"C:\Git\projects\Tricopter\Tri-copter" -I"C:\Git\projects\Tricopter\Tri-copter\newlib" -I"C:\Git\projects\Tricopter\Tri-copter\L0_LowLevel" -I"C:\Git\projects\Tricopter\Tri-copter\L1_FreeRTOS" -I"C:\Git\projects\Tricopter\Tri-copter\L1_FreeRTOS\include" -I"C:\Git\projects\Tricopter\Tri-copter\L1_FreeRTOS\portable" -I"C:\Git\projects\Tricopter\Tri-copter\L2_Drivers" -I"C:\Git\projects\Tricopter\Tri-copter\L2_Drivers\base" -I"C:\Git\projects\Tricopter\Tri-copter\L3_Utils" -I"C:\Git\projects\Tricopter\Tri-copter\L3_Utils\tlm" -I"C:\Git\projects\Tricopter\Tri-copter\L4_IO" -I"C:\Git\projects\Tricopter\Tri-copter\L4_IO\fat" -I"C:\Git\projects\Tricopter\Tri-copter\L4_IO\wireless" -I"C:\Git\projects\Tricopter\Tri-copter\L5_Application" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -c -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -I"C:\Users\sloretz\git\Tricopter\Tri-copter" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\newlib" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L0_LowLevel" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L1_FreeRTOS" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L1_FreeRTOS\include" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L1_FreeRTOS\portable" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L2_Drivers" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L2_Drivers\base" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L3_Utils" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L3_Utils\tlm" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L4_IO" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L4_IO\fat" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L4_IO\wireless" -I"C:\Users\sloretz\git\Tricopter\Tri-copter\L5_Application" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
