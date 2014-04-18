@@ -1,6 +1,6 @@
-L5_Application/source/Orientation.d: \
- ../L5_Application/source/Orientation.cpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/Orientation.hpp \
+L5_Application/source/OrientationTask.d: \
+ ../L5_Application/source/OrientationTask.cpp \
+ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/OrientationTask.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/10dof.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO/src/I2C_Device_Base.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/I2C2.hpp \
@@ -24,23 +24,10 @@ L5_Application/source/Orientation.d: \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/semphr.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/queue.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/LPC17xx.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/tasks.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/scheduler_task.hpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/queue.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/soft_timer.hpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/lpc_sys.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/rtc.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/command_handler.hpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/vector.hpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/str.hpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers\base/char_dev.hpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/wireless.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh_typedefs.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh_config.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh_typedefs.h
+ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/queue.h
 
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/Orientation.hpp:
+C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/OrientationTask.hpp:
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/10dof.hpp:
 
@@ -88,32 +75,6 @@ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/queue
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/LPC17xx.h:
 
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/tasks.hpp:
-
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/scheduler_task.hpp:
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/queue.h:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/soft_timer.hpp:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/lpc_sys.h:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/rtc.h:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/command_handler.hpp:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/vector.hpp:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/str.hpp:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers\base/char_dev.hpp:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/wireless.h:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh.h:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh_typedefs.h:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh_config.h:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO\wireless/src/mesh_typedefs.h:

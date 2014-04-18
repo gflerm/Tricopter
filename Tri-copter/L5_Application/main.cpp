@@ -28,11 +28,10 @@
 #include "10dof.h"
 #include "10dof.hpp"
 #include "BM_Controller.hpp"
-#include "Orientation.hpp"
+#include "OrientationTask.hpp"
 #include <cmath>
 
 using namespace _10dof;
-using namespace _OrientationTask;
 
 //ServoController *g_servos = 0;
 

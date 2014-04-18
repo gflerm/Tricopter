@@ -50,7 +50,7 @@ L5_Application/main.d: ../L5_Application/main.cpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO/src/I2C_Device_Base.hpp \
  ../L5_Application/BM_Controller.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/lpc_pwm.hpp \
- ../L5_Application/Orientation.hpp
+ ../L5_Application/OrientationTask.hpp
 
 ../L5_Application/tasks.hpp:
 
@@ -156,4 +156,4 @@ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO/src/I2C_Device_Base
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/lpc_pwm.hpp:
 
-../L5_Application/Orientation.hpp:
+../L5_Application/OrientationTask.hpp:

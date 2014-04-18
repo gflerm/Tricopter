@@ -5,10 +5,9 @@
  *      Author: Michael
  */
 
-#include "Orientation.hpp"
+#include "OrientationTask.hpp"
 
 using namespace _10dof;
-using namespace _OrientationTask;
 
 bool OrientationTask::init()
 {
@@ -35,11 +34,10 @@ bool OrientationTask::run(void* p)
     gyro_data = gyro_sensor->getXYZ();
 
     //Integrate gyroscope data
-    orientation.x.word += (gyro_data.x.word) * ORIENTATION_UPDATE_TIME;
-    orientation.y.word += (gyro_data.y.word) * ORIENTATION_UPDATE_TIME;
-    orientation.z.word += (gyro_data.z.word) * ORIENTATION_UPDATE_TIME;
+    orientation.x.word += toRadians((gyro_data.x.word)) * toSeconds(ORIENTATION_UPDATE_TIME);
+    orientation.y.word += toRadians((gyro_data.y.word)) * toSeconds(ORIENTATION_UPDATE_TIME);
 
-    //Find the angle from the acceleration data
+    //Find the angle in radians from the acceleration data
     accel_calc.x.word = atan2(accel_data.z.word, accel_data.x.word);
     accel_calc.y.word = atan2(accel_data.z.word, accel_data.y.word);
 
@@ -49,15 +47,11 @@ bool OrientationTask::run(void* p)
     {
         //Complementary filter
         //High pass filter the gyro data, low pass filter the acceleration data
-        orientation.x.word = (FILTER_PERCENT_HIGH * (orientation.x.word + gyro_data.x.word * ORIENTATION_UPDATE_TIME)) +
+        orientation.x.word = (FILTER_PERCENT_HIGH * (orientation.x.word + toRadians(gyro_data.x.word) * toSeconds(ORIENTATION_UPDATE_TIME))) +
                              (FILTER_PERCENT_LOW  * accel_calc.x.word);
-        orientation.y.word = (FILTER_PERCENT_HIGH * (orientation.y.word + gyro_data.y.word * ORIENTATION_UPDATE_TIME)) +
+        orientation.y.word = (FILTER_PERCENT_HIGH * (orientation.y.word + toRadians(gyro_data.y.word) * toSeconds(ORIENTATION_UPDATE_TIME))) +
                              (FILTER_PERCENT_LOW * accel_calc.y.word);
-        //orientation.z = <<TODO>> use magnetometer if this drifts
     }
 
-    //Delay for a fixed period so the integral code works out
-    //vTaskDelayUntil(&startTime, (ORIENTATION_UPDATE_TIME * 1000 / portTICK_PERIOD_MS));
-
-    return true; //should never get here
+    return true;
 }
