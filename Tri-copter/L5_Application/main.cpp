@@ -29,6 +29,7 @@
 #include "10dof.hpp"
 #include "BM_Controller.hpp"
 #include "OrientationTask.hpp"
+#include "MotorControlTask.hpp"
 #include <cmath>
 
 using namespace _10dof;
@@ -90,8 +91,6 @@ TaskHandle_t display;
 TaskHandle_t bm_calibraiton;
 int main(void)
 {
-    balance Main_axis;
-
     OrientationTask* orientation = new OrientationTask();
     MotorControlTask* control = new MotorControlTask(orientation->get_orientation(), orientation->get_height());
 
@@ -102,6 +101,7 @@ int main(void)
 
     scheduler_add_task(term);
     scheduler_add_task(orientation);
+    scheduler_add_task(control);
    // xTaskCreate(user_calibration, "calibrate", 1024, &Main_axis, PRIORITY_CRITICAL, &calibration);
 
     //g_servos->enablePort(ServoController::pwm1);

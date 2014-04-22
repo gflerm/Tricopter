@@ -17,7 +17,9 @@ void MotorController::setPercent(pwmType port, float percent)
     //b = 1000 + 500 = 1500
    // pulseWidth = 500.0f * orientation + 1500;
     //pulseWidth = sys_get_cpu_clock() *.001f *((orientation/2)+1.5f);
-    pulseWidth = 0;
+    pulseWidth = sys_get_cpu_clock() * .001f *
+                 (percent/100 * (MAX_PULSE_TIME - MIN_PULSE_TIME))
+                 + MIN_PULSE_TIME;
     switch(port)
     {
         case pwm1: LPC_PWM1->MR1 = pulseWidth; break;
@@ -32,7 +34,6 @@ void MotorController::setPercent(pwmType port, float percent)
 
     //enable pwm
     LPC_PWM1->LER = 1 << enableMask;
-
 }
 
 
