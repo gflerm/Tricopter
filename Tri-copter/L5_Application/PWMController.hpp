@@ -37,10 +37,14 @@ class PWMController
 
         //Sets the next orientation of the servo
         //value between -1.0f and 1.0f
-        void setNextPosition(pwmType port, float orientation);
+        //void setNextPosition(pwmType port, float orientation);
 
     protected:
         uint32_t enableMask;
+
+        //the min/max pulse times that make sense for a particular PWM device
+        float MIN_PULSE_TIME;
+        float MAX_PULSE_TIME;
 };
 
 #endif /* SERVOTASK_HPP_ */

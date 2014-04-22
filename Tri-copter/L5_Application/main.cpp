@@ -93,6 +93,7 @@ int main(void)
     balance Main_axis;
 
     OrientationTask* orientation = new OrientationTask();
+    MotorControlTask* control = new MotorControlTask(orientation->get_orientation(), orientation->get_height());
 
 	terminalTask *term = new terminalTask(PRIORITY_MEDIUM);
     //g_servos = new ServoController();
@@ -101,7 +102,7 @@ int main(void)
 
     scheduler_add_task(term);
     scheduler_add_task(orientation);
-    xTaskCreate(user_calibration, "calibrate", 1024, &Main_axis, PRIORITY_CRITICAL, &calibration);
+   // xTaskCreate(user_calibration, "calibrate", 1024, &Main_axis, PRIORITY_CRITICAL, &calibration);
 
     //g_servos->enablePort(ServoController::pwm1);
 
@@ -110,5 +111,8 @@ int main(void)
 
 	//vTaskStartScheduler();
     scheduler_start(true);
+
+    delete orientation;
+    delete control;
     return -1;
 }

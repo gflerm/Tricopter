@@ -31,16 +31,23 @@ public:
 
      //run()
      //Calculates the orientation. Is called automatically by the scheduler
-     bool run(void* p);
-
-     //get_orientation()
-     //Returns the orientation of the tricopter, in radians
      //NOTE: For this function to work properly, it needs to be called every
      //      ORIENTATION_UDPATE_TIME ms; this is accomplished with a call to
      //      scheduler_task::setRunDuration() in init()
-     three_axis_info_t get_orientation();
+     bool run(void* p);
+
+     //get_orientation()
+     //Returns a pointer to the orientation of the tricopter, in radians
+     three_axis_info_t* get_orientation();
+
+     //get_height()
+     //Returns a pointer to the height, in meters
+     float* get_height();
 private:
      three_axis_info_t orientation;
+     float height;
+     float velocity_vertical;
+
      Accelerometer* accel_sensor;
      Gyroscope* gyro_sensor;
 

@@ -17,7 +17,7 @@ void ServoController::setPercent(pwmType port, float percent)
     //b = 1000 + 500 = 1500
     // pulseWidth = 500.0f * orientation + 1500;
     //pulseWidth = sys_get_cpu_clock() *.001f *((orientation/2)+1.5f);
-    pulseWidth = .001f;
+   // pulseWidth = sys_get_cpu_clock() * .001f *
     switch(port)
     {
         case pwm1: LPC_PWM1->MR1 = pulseWidth; break;

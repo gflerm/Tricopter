@@ -47,7 +47,7 @@ private:
     MotorController motor_control;
     ServoController servo_control;
 
-    //Pointer to the orientation data
+    //Pointer to orientation and height
     three_axis_info_t* orientation;
     float* height;
 
@@ -63,7 +63,6 @@ private:
     static const ServoController::pwmType frontRightMotor = ServoController::pwm2;
     static const ServoController::pwmType backCenterMotor = ServoController::pwm3;
     static const ServoController::pwmType backCenterServo = ServoController::pwm4;
-
 };
 
 #endif /* MOTORCONTROL_HPP_ */

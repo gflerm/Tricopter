@@ -13,7 +13,11 @@
 class ServoController : public PWMController
 {
 public:
-      ServoController() : PWMController() {  };
+      ServoController() : PWMController()
+      {
+          MIN_PULSE_TIME = 1;
+          MAX_PULSE_TIME = 2;
+      };
       void setPercent(pwmType port, float percent);
 private:
 };

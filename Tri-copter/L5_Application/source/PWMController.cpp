@@ -24,7 +24,6 @@ PWMController::PWMController():
     //1 microsecond resolution
     //LPC_PWM1->PR = ((sys_get_cpu_clock()*(1000000)))-1;
 
-
     //reset on mr0
     LPC_PWM1->MCR = 1 << 1;
 
@@ -35,7 +34,6 @@ PWMController::PWMController():
     LPC_PWM1->TC = 0; //reset counter
     LPC_PWM1->CTCR &= ~(0xF << 0);
 }
-
 
 //Begin PWM output on this port
 bool PWMController::enablePort(pwmType port)
@@ -58,7 +56,7 @@ bool PWMController::enablePort(pwmType port)
     return false;
 }
 
-void PWMController::setNextPosition(pwmType port, float orientation)
+/*void PWMController::setNextPosition(pwmType port, float orientation)
 {
     uint32_t pulseWidth;
     //(-1.0f,1000) (1.0f,2000)
@@ -80,5 +78,5 @@ void PWMController::setNextPosition(pwmType port, float orientation)
 
     //enable pwm
     LPC_PWM1->LER = 1 << enableMask;
-}
+} */
 
