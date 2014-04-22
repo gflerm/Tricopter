@@ -20,7 +20,7 @@ const uint8_t c_magno_addr = 0x3D; //3D -> read, 3C -> write
 
 typedef union{
     char byte[2];
-    uint16_t word;
+    int16_t word;
 }axis_info_t;
 
 typedef union {
@@ -39,7 +39,6 @@ class Accelerometer : protected I2C_Device_Base, public SingletonTemplate<Accele
         axis_info_t getY();  ///< @returns Y-Axis value
         axis_info_t getZ();  ///< @returns Z-Axis value
         three_axis_info_t getXYZ(); //returns 3 values at once
-        char whoami();
         void calibrate();
 
     private:
