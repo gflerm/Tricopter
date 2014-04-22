@@ -9,6 +9,7 @@
 #define MOTORCONTROL_HPP_
 
 #include "scheduler_task.hpp"
+#include "MotorController.hpp"
 #include "ServoController.hpp"
 #include "10dof.hpp"
 
@@ -43,6 +44,9 @@ public:
     //Update the motor speed and servo position based on the orientation
     bool run(void* p);
 private:
+    MotorController motor_control;
+    ServoController servo_control;
+
     //Pointer to the orientation data
     three_axis_info_t* orientation;
     float* height;

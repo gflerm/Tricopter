@@ -6,7 +6,9 @@
 CPP_SRCS += \
 ../L5_Application/source/10dof.cpp \
 ../L5_Application/source/MotorControlTask.cpp \
+../L5_Application/source/MotorController.cpp \
 ../L5_Application/source/OrientationTask.cpp \
+../L5_Application/source/PWMController.cpp \
 ../L5_Application/source/ServoController.cpp \
 ../L5_Application/source/high_level_init.cpp \
 ../L5_Application/source/remote.cpp \
@@ -21,7 +23,9 @@ OBJS += \
 ./L5_Application/source/BM_Controller.o \
 ./L5_Application/source/LCD.o \
 ./L5_Application/source/MotorControlTask.o \
+./L5_Application/source/MotorController.o \
 ./L5_Application/source/OrientationTask.o \
+./L5_Application/source/PWMController.o \
 ./L5_Application/source/ServoController.o \
 ./L5_Application/source/high_level_init.o \
 ./L5_Application/source/remote.o \
@@ -34,7 +38,9 @@ C_DEPS += \
 CPP_DEPS += \
 ./L5_Application/source/10dof.d \
 ./L5_Application/source/MotorControlTask.d \
+./L5_Application/source/MotorController.d \
 ./L5_Application/source/OrientationTask.d \
+./L5_Application/source/PWMController.d \
 ./L5_Application/source/ServoController.d \
 ./L5_Application/source/high_level_init.d \
 ./L5_Application/source/remote.d \

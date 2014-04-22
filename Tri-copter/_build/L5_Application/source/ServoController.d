@@ -1,6 +1,7 @@
 L5_Application/source/ServoController.d: \
  ../L5_Application/source/ServoController.cpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/ServoController.hpp \
+ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/PWMController.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/lpc_sys.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/LPC17xx.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/source/bit_manip.h \
@@ -10,6 +11,8 @@ L5_Application/source/ServoController.d: \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter/sys_config.h
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/ServoController.hpp:
+
+C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/PWMController.hpp:
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L0_LowLevel/lpc_sys.h:
 
