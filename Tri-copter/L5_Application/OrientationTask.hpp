@@ -65,11 +65,20 @@ private:
      static const uint16_t ACCEL_MAGNITUDE_LOW = 640;
      static const uint16_t ACCEL_MAGNITUDE_HIGH = 2304;
 
+     //constants
+     static const float GRAVITY_ACCEL = 9.81;
+     static const double PI = 3.1415926;
+
      three_axis_info_t accel_data;
      three_axis_info_t gyro_data;
      three_axis_info_t accel_calc;
 
      uint16_t accel_magnitude;
+
+     inline float toMetersPerSecondSq(int g)
+     {
+         return g * GRAVITY_ACCEL;
+     }
 
      //Converts from milliseconds to seconds
      inline float toSeconds(int milliseconds)
@@ -78,10 +87,9 @@ private:
      }
 
      //Converts from milli degrees to radians
-     const double PI = 3.1415926;
-     inline float toRadians(float degrees)
+     inline float toRadians(float millidegrees)
      {
-         return (degrees / 1000.0) / 180 * PI;
+         return (millidegrees / 1000.0) / 180 * PI;
      }
 };
 

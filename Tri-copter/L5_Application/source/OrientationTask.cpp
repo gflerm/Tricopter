@@ -43,8 +43,9 @@ bool OrientationTask::run(void* p)
     accel_data = accel_sensor->getXYZ();
     gyro_data = gyro_sensor->getXYZ();
 
-    //Integrate accelerometer data for the height
-    velocity_vertical += accel_data.z.word * secondsSinceLastUpdate;
+
+    //Double integrate accelerometer data for the height
+    velocity_vertical += toMetersPerSecondSq(accel_data.z.word) * secondsSinceLastUpdate;
     height += velocity_vertical * secondsSinceLastUpdate;
 
     //Integrate gyroscope data

@@ -31,6 +31,7 @@
 #include "OrientationTask.hpp"
 #include "MotorControlTask.hpp"
 #include <cmath>
+#include <unistd.h>
 
 using namespace _10dof;
 
@@ -85,10 +86,25 @@ void debug_trigger(void *)
 */
 //static TaskHandle_t calibration;
 
+void debugTask(void* p)
+{
+    OrientationTask* orientation = (OrientationTask*)p;
+    while (true)
+    {
+        printf("-------------------------------\n");
+        printf("Orientation x: %f\n", orientation->get_orientation()->x.word);
+        printf("Orientation y: %f\n", orientation->get_orientation()->y.word);
+        printf("Orientation z: %f\n", orientation->get_orientation()->z.word);
+        printf("Height: %f\n", *(orientation->get_height()));
+        vTaskDelay(250);
+    }
+}
+
 //NEED A BETTER SOLUTION FOR KEEPING THIS!
 TaskHandle_t calibration;
 TaskHandle_t display;
 TaskHandle_t bm_calibraiton;
+TaskHandle_t debugtask;
 int main(void)
 {
     OrientationTask* orientation = new OrientationTask();
@@ -110,7 +126,9 @@ int main(void)
     //xTaskCreate(debug_trigger, "trig", 256, 0,PRIORITY_HIGH, &debugHandle);
 
 	//vTaskStartScheduler();
+    xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_HIGH, &debugtask);
     scheduler_start(true);
+
 
     delete orientation;
     delete control;
