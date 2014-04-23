@@ -11,10 +11,43 @@ using namespace _10dof;
 
 #include <cstdio>
 
+#define DIST_PIN 30
+
+static float total; // made global to simplify life.
+
+
+void distance_sensor(){ // Interrupt Handler
+    if( LPC_GPIOINT->IO0IntStatR &(1<<DIST_PIN)){
+        LPC_TIM3->TCR &= (1<<0); //enable pin
+        LPC_GPIOINT->IO0IntClr |= (1<<DIST_PIN); // clear interrupt
+        LPC_GPIOINT->IO0IntEnR &= (1<<DIST_PIN); //disable rising edge
+        LPC_GPIOINT->IO0IntEnF |= (1<<DIST_PIN); //enable falling edge
+    }
+    else if(LPC_GPIOINT->IO0IntStatF & (1<<DIST_PIN)){
+        total = LPC_TIM3->TC; // Capture time info
+        LPC_GPIOINT->IO0IntClr |= (1<<DIST_PIN); // clear interrupt
+        LPC_TIM3->TCR |=(1<<0); // disable timer
+        LPC_TIM3->TCR |= (1<<1); // RESET TO ZERO
+        LPC_GPIOINT->IO0IntEnF &= (1<<DIST_PIN); //disable falling edge
+        LPC_GPIOINT->IO0IntEnR |= (1<<DIST_PIN); //enable rising edge
+    }
+}
+
+
 bool OrientationTask::init()
 {
     accel_sensor = &(Accelerometer::getInstance());
     gyro_sensor = &(Gyroscope::getInstance());
+
+    //Height Sensor
+    LPC_SC->PCONP |= (1<<23); // enable hardware timer 3
+    LPC_SC->PCLKSEL1 &=(1<<14); // USE CCLK
+    LPC_TIM3->TCR |= (1<<0); // DISABLE TIMER
+    LPC_TIM3->TCR |= (1<<1); // RESET TO ZERO
+    LPC_PINCON->PINSEL3 &= (3<<6); //SET pin 1.19 to gpio
+    LPC_GPIO1->FIODIR |= (1<<19); //SET PIN 1.19 to output
+    eint3_enable_port0(DIST_PIN, eint_rising_edge, *distance_sensor);
+
 
     orientation.x = 0;
     orientation.y = 0;
@@ -44,19 +77,25 @@ bool OrientationTask::run(void* p)
 {
     float secondsSinceLastUpdate = toSeconds(ORIENTATION_UPDATE_TIME);
 
+    //Grab height info from Ultra sonic sensor (needs around 500us after going low)
+    LPC_GPIO1->FIOSET |= (1<<19); // set high
+    delay_ms(20);
+    LPC_GPIO1->FIOCLR |= (1<<19); // set low
+
     //Grab info from accelerometer and gyroscope
     accel_data = accel_sensor->getXYZ();
     gyro_data = gyro_sensor->getXYZ();
-
-    //Double integrate accelerometer data for the height
-    velocity_vertical += (toMetersPerSecondSq(accel_data.z.word) - 9.81) * secondsSinceLastUpdate;
-    height += velocity_vertical * secondsSinceLastUpdate;
 
     //Integrate gyroscope data
     orientation.x += toRadians((gyro_data.x.word)) * secondsSinceLastUpdate;
     orientation.y += toRadians((gyro_data.y.word)) * secondsSinceLastUpdate;
     if (std::abs(gyro_data.z.word) > 250)
         orientation.z += toRadians((gyro_data.z.word)) * secondsSinceLastUpdate;
+
+
+    //Calculate height in inches
+    total =(.120*total)/148; // should be .208 but .120 provides better result
+
 
     //~~~~~~~~~~NOTE: ACCELEROMETER AXES ARE OPPOSITE OF GYROSCOPE~~~~~~~~~~~~
     //Find the angle in radians from the acceleration data

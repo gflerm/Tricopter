@@ -11,7 +11,8 @@
 #include "10dof.hpp"
 #include "scheduler_task.hpp"
 #include <cmath> //abs() and atan2()
-
+#include "eint.h"
+#include "utilities.h"
 using namespace _10dof;
 
 //Computes the orientation of the tricopter from a combination of the gyro and accelerometer.
@@ -52,6 +53,7 @@ public:
      //get_height()
      //Returns a pointer to the height, in meters
      float* get_height();
+
 private:
      orientation_t orientation;
      float height;
