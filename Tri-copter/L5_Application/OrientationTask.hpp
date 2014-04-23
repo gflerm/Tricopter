@@ -38,13 +38,22 @@ public:
 
      //get_orientation()
      //Returns a pointer to the orientation of the tricopter, in radians
-     three_axis_info_t* get_orientation();
+     orientation_t* get_orientation();
+
+     three_axis_info_t get_raw_accel()
+     {
+         return accel_sensor->getXYZ();
+     }
+     three_axis_info_t get_raw_gyro()
+     {
+         return gyro_sensor->getXYZ();
+     }
 
      //get_height()
      //Returns a pointer to the height, in meters
      float* get_height();
 private:
-     three_axis_info_t orientation;
+     orientation_t orientation;
      float height;
      float velocity_vertical;
 
@@ -71,13 +80,14 @@ private:
 
      three_axis_info_t accel_data;
      three_axis_info_t gyro_data;
-     three_axis_info_t accel_calc;
+     orientation_t accel_calc;
 
      uint16_t accel_magnitude;
 
-     inline float toMetersPerSecondSq(int g)
+     //Accel sensor gives 4mg/bit
+     inline float toMetersPerSecondSq(int mg)
      {
-         return g * GRAVITY_ACCEL;
+         return mg * GRAVITY_ACCEL * 4 / 1000;
      }
 
      //Converts from milliseconds to seconds

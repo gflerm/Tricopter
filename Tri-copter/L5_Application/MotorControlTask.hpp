@@ -29,7 +29,7 @@ class MotorControlTask : public scheduler_task
 public:
     //MotorControlTask()
     //Supplies some default values to the scheduler_task constructor
-    MotorControlTask(three_axis_info_t* _orientation, float* _height)
+    MotorControlTask(orientation_t* _orientation, float* _height)
                    : scheduler_task("motor_control_task", STACK_SIZE_BYTES, PRIORITY_HIGH, NULL)
     {
         orientation = _orientation;
@@ -48,7 +48,7 @@ private:
     ServoController servo_control;
 
     //Pointer to orientation and height
-    three_axis_info_t* orientation;
+    orientation_t* orientation;
     float* height;
 
     //Task control settings

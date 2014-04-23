@@ -92,11 +92,13 @@ void debugTask(void* p)
     while (true)
     {
         printf("-------------------------------\n");
-        printf("Orientation x: %f\n", orientation->get_orientation()->x.word);
-        printf("Orientation y: %f\n", orientation->get_orientation()->y.word);
-        printf("Orientation z: %f\n", orientation->get_orientation()->z.word);
-        printf("Height: %f\n", *(orientation->get_height()));
-        vTaskDelay(250);
+        printf("Acceleration x: %f, y: %f, z: %f\n", orientation->get_raw_accel().x.word * 4.0 / 1000.0,  orientation->get_raw_accel().y.word * 4.0 / 1000.0,  orientation->get_raw_accel().z.word * 4.0 / 1000.0);
+        printf("Gyro x: %d, y: %d, z: %d\n", orientation->get_raw_gyro().x.word,  orientation->get_raw_gyro().y.word,  orientation->get_raw_gyro().z.word);
+        printf("Orientation x: %f\n", orientation->get_orientation()->x);
+        printf("Orientation y: %f\n", orientation->get_orientation()->y);
+        printf("Orientation z: %f\n", orientation->get_orientation()->z);
+       // printf("Height: %f\n", *(orientation->get_height()));
+        vTaskDelay(500);
     }
 }
 

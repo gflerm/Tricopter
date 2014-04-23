@@ -30,6 +30,12 @@ typedef union {
         };
 }three_axis_info_t;
 
+typedef struct{
+        float x;
+        float y;
+        float z;
+} orientation_t;
+
 class Accelerometer : protected I2C_Device_Base, public SingletonTemplate<Accelerometer>
 {
     public:
