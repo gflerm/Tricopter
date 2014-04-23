@@ -88,8 +88,6 @@ bool terminalTask::taskEntry()
     cp.addHandler(rmHandler,     "rm",    "Remove a file. Ex: 'rm 0:file.txt'");
 
     //Tri-Copter related Handles
-    //cp.addHandler(calibration_handler, "cali", "Used to calibrate sensors");
-   // cp.addHandler(display_handler, "display, display current values");
 
 
     // Misc. handlers

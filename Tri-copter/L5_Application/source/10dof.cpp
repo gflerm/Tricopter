@@ -1,5 +1,39 @@
 #include "10dof.hpp"
 
+
+// Defines taken from
+//https://github.com/pololu/l3g4200d-arduino/blob/master/L3G4200D/L3G4200D.h
+#define L3G4200D_WHO_AM_I 0x0F
+
+#define L3G4200D_CTRL_REG1 0x20
+#define L3G4200D_CTRL_REG2 0x21
+#define L3G4200D_CTRL_REG3 0x22
+#define L3G4200D_CTRL_REG4 0x23
+#define L3G4200D_CTRL_REG5 0x24
+#define L3G4200D_REFERENCE 0x25
+#define L3G4200D_OUT_TEMP 0x26
+#define L3G4200D_STATUS_REG 0x27
+
+#define L3G4200D_OUT_X_L 0x28
+#define L3G4200D_OUT_X_H 0x29
+#define L3G4200D_OUT_Y_L 0x2A
+#define L3G4200D_OUT_Y_H 0x2B
+#define L3G4200D_OUT_Z_L 0x2C
+#define L3G4200D_OUT_Z_H 0x2D
+
+#define L3G4200D_FIFO_CTRL_REG 0x2E
+#define L3G4200D_FIFO_SRC_REG 0x2F
+
+#define L3G4200D_INT1_CFG 0x30
+#define L3G4200D_INT1_SRC 0x31
+#define L3G4200D_INT1_THS_XH 0x32
+#define L3G4200D_INT1_THS_XL 0x33
+#define L3G4200D_INT1_THS_YH 0x34
+#define L3G4200D_INT1_THS_YL 0x35
+#define L3G4200D_INT1_THS_ZH 0x36
+#define L3G4200D_INT1_THS_ZL 0x37
+#define L3G4200D_INT1_DURATION 0x38
+
 namespace _10dof
 {
 
@@ -37,25 +71,23 @@ three_axis_info_t Accelerometer::getXYZ()
     readRegisters(0x32, reading.byte,6);
     return reading;
 }
-char Accelerometer::whoami()
-{
-    //todo
-    return 0;
-}
 
 void Accelerometer::calibrate()
 {
     //Get average of 10 readings
     //write average to offset register
     int16_t x = 0, y = 0, z = 0;
-    char axi[3];
+    char axi[3] = {0,0,0};
+    //Clear offset register
+    writeRegisters(0x1E, axi, 3);
 
     for(int i=0; i<10; i++)
     {
+        vTaskDelay(10);
         three_axis_info_t reading = getXYZ();
-        x += reading.x.byte[0];
-        y += reading.y.byte[0];
-        z += reading.z.byte[0];
+        x += reading.x.word;
+        y += reading.y.word;
+        z += reading.z.word;
     }
 
     //Average and negate
@@ -63,49 +95,59 @@ void Accelerometer::calibrate()
     axi[1] = y / -10;
     axi[2] = z / -10;
 
-    writeRegisters(0x1E, axi, 3); //Write to offset register
+    //Write to offset register
+    //writeRegisters(0x1E, axi, 3);
 }
 
-//TODO everything below
 
 bool Gyroscope::init()
 {
-    //todo
+    //Use bypass mode (default)
+    //Enable all axes and power on
+    writeReg(L3G4200D_CTRL_REG1, 0x0F);
     return true;
 }
 
 axis_info_t Gyroscope::getX()
 {
     axis_info_t reading;
-    readRegisters(0x28, reading.byte,2);
+    readRegisters(L3G4200D_OUT_X_L, reading.byte,1);
+    readRegisters(L3G4200D_OUT_X_H, reading.byte+1,1);
     return reading;
 }
 
 axis_info_t Gyroscope::getY()
 {
     axis_info_t reading;
-    readRegisters(0x2A, reading.byte,2);
+    readRegisters(L3G4200D_OUT_Y_L, reading.byte,1);
+    readRegisters(L3G4200D_OUT_Y_H, reading.byte+1,1);
     return reading;
 }
 
 axis_info_t Gyroscope::getZ()
 {
     axis_info_t reading;
-    readRegisters(0x2c, reading.byte,2);
+    readRegisters(L3G4200D_OUT_Z_L, reading.byte,1);
+    readRegisters(L3G4200D_OUT_Z_H, reading.byte+1,1);
     return reading;
 }
 
 three_axis_info_t Gyroscope::getXYZ()
 {
     three_axis_info_t reading;
-    readRegisters(0x28, reading.byte,6);
+    readRegisters(L3G4200D_OUT_X_L, reading.x.byte,1);
+    readRegisters(L3G4200D_OUT_X_H, reading.x.byte+1,1);
+    readRegisters(L3G4200D_OUT_Y_L, reading.y.byte,1);
+    readRegisters(L3G4200D_OUT_Y_H, reading.y.byte+1,1);
+    readRegisters(L3G4200D_OUT_Z_L, reading.z.byte,1);
+    readRegisters(L3G4200D_OUT_Z_H, reading.z.byte+1,1);
     return reading;
 }
 
 char Gyroscope::whoami()
 {
     char id = 0;
-    readRegisters(0x0F, &id,1);
+    readRegisters(L3G4200D_WHO_AM_I, &id,1);
     return id;
 }
 
