@@ -6,6 +6,7 @@
  */
 
 #include "MotorControlTask.hpp"
+#include <algorithm> //max
 
 bool MotorControlTask::init()
 {
@@ -73,11 +74,13 @@ bool MotorControlTask::run(void* p)
     //  Adjust servo position, maybe adjust back motor speed?
     if (orientation->z < ZERO.z)
     {
-        backCenterServoPercent -= SENSITIVITY_Z;
+        if (backCenterServoPercent - SENSITIVITY_Z > PERCENT_MIN)
+            backCenterServoPercent -= SENSITIVITY_Z;
     }
     else if (orientation-> z > ZERO.z)
     {
-        backCenterServoPercent += SENSITIVITY_Z;
+        if (backCenterServoPercent + SENSITIVITY_Z < PERCENT_MAX)
+            backCenterServoPercent += SENSITIVITY_Z;
     }
 
     //Height control
@@ -91,10 +94,10 @@ bool MotorControlTask::run(void* p)
         heightScalar -= SENSITIVITY_HEIGHT;
     }
 
-    motor_control.setPercent(frontRightMotor, frontRightMotorPercent * heightScalar);
-    motor_control.setPercent(frontLeftMotor, frontLeftMotorPercent * heightScalar);
-    motor_control.setPercent(backCenterMotor, backCenterMotorPercent * heightScalar);
-    servo_control.setPercent(backCenterServo, backCenterServoPercent);
+    motor_control.setPercent(frontRightMotor, std::max(PERCENT_MAX, frontRightMotorPercent * heightScalar));
+    motor_control.setPercent(frontLeftMotor, std::max(PERCENT_MAX, frontLeftMotorPercent * heightScalar));
+    motor_control.setPercent(backCenterMotor, std::max(PERCENT_MAX, backCenterMotorPercent * heightScalar));
+    servo_control.setPercent(backCenterServo, std::max(PERCENT_MAX, backCenterServoPercent));
 
     return true;
 }
