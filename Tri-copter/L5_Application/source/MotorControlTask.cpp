@@ -24,10 +24,11 @@ bool MotorControlTask::init()
     //Initialize speeds and servo positions
     //TODO: is there an initial startup procedure for the ESCs?
 
-    frontLeftMotorPercent = 0;
-    frontRightMotorPercent = 0;
-    backCenterMotorPercent = 0;
+    frontLeftMotorPercent = 15;
+    frontRightMotorPercent = 15;
+    backCenterMotorPercent = 15;
     backCenterServoPercent = 50;
+    heightScalar = 1;
 
     motor_control.setPercent(frontLeftMotor, frontLeftMotorPercent);
     motor_control.setPercent(frontRightMotor, frontRightMotorPercent);
@@ -97,7 +98,7 @@ bool MotorControlTask::run(void* p)
     motor_control.setPercent(frontRightMotor, std::max(PERCENT_MAX, frontRightMotorPercent * heightScalar));
     motor_control.setPercent(frontLeftMotor, std::max(PERCENT_MAX, frontLeftMotorPercent * heightScalar));
     motor_control.setPercent(backCenterMotor, std::max(PERCENT_MAX, backCenterMotorPercent * heightScalar));
-    servo_control.setPercent(backCenterServo, std::max(PERCENT_MAX, backCenterServoPercent));
+    servo_control.setPercent(backCenterServo, backCenterServoPercent);
 
     return true;
 }
