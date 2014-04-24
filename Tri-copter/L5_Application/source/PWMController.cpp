@@ -38,7 +38,7 @@ PWMController::PWMController():
 //Begin PWM output on this port
 bool PWMController::enablePort(pwmType port)
 {
-    if (port >= pwm1 && port <= pwm6)
+    if (port >= pwm0 && port <= pwm5)
     {
         //enable the port
         enableMask |= 1 << port;

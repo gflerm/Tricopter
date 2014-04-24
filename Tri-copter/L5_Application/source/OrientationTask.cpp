@@ -94,7 +94,7 @@ bool OrientationTask::run(void* p)
 
 
     //Calculate height in inches
-    total =(.120*total)/148; // should be .208 but .120 provides better result
+    height =(.120*total)/148; // should be .208 but .120 provides better result
 
 
     //~~~~~~~~~~NOTE: ACCELEROMETER AXES ARE OPPOSITE OF GYROSCOPE~~~~~~~~~~~~

@@ -22,12 +22,12 @@ void ServoController::setPercent(pwmType port, float percent)
                  + MIN_PULSE_TIME;
     switch(port)
     {
-        case pwm1: LPC_PWM1->MR1 = pulseWidth; break;
-        case pwm2: LPC_PWM1->MR2 = pulseWidth; break;
-        case pwm3: LPC_PWM1->MR3 = pulseWidth; break;
-        case pwm4: LPC_PWM1->MR4 = pulseWidth; break;
-        case pwm5: LPC_PWM1->MR5 = pulseWidth; break;
-        case pwm6: LPC_PWM1->MR6 = pulseWidth; break;
+        case pwm0: LPC_PWM1->MR1 = pulseWidth; break;
+        case pwm1: LPC_PWM1->MR2 = pulseWidth; break;
+        case pwm2: LPC_PWM1->MR3 = pulseWidth; break;
+        case pwm3: LPC_PWM1->MR4 = pulseWidth; break;
+        case pwm4: LPC_PWM1->MR5 = pulseWidth; break;
+        case pwm5: LPC_PWM1->MR6 = pulseWidth; break;
         default:
             break;
     }

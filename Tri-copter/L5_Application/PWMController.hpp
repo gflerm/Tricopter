@@ -19,12 +19,12 @@ class PWMController
 {
     public:
         typedef enum {
-            pwm1=0, ///< P2.0
-            pwm2=1, ///< P2.1
-            pwm3=2, ///< P2.2
-            pwm4=3, ///< P2.0
-            pwm5=4, ///< P2.1
-            pwm6=5  ///< P2.2
+            pwm0=0, ///< P2.0
+            pwm1=1, ///< P2.1
+            pwm2=2, ///< P2.2
+            pwm3=3, ///< P2.3
+            pwm4=4, ///< P2.4
+            pwm5=5  ///< P2.5
         } pwmType;
 
         PWMController();

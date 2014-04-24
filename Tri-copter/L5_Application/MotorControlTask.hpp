@@ -56,13 +56,25 @@ private:
     static const int MOTOR_CONTROL_UPDATE = 20; //ms, we can update the motor control at most 50 times/sec
 
     //Calibration settings
-    static const float SENSITIVITY = 1; //scalar for how fast the motors should spin up
-    static const float DEAD_ZONE = .01; //dead zone for any small fluctuations (might not need this)
+    static const float SENSITIVITY_X = 1; //scalar for how fast the motors should spin up
+    static const float SENSITIVITY_Y = 1;
+    static const float SENSITIVITY_Z = 1;
+    static const float SENSITIVITY_HEIGHT = .05;
 
-    static const ServoController::pwmType frontLeftMotor = ServoController::pwm1;
-    static const ServoController::pwmType frontRightMotor = ServoController::pwm2;
-    static const ServoController::pwmType backCenterMotor = ServoController::pwm3;
-    static const ServoController::pwmType backCenterServo = ServoController::pwm4;
+    float frontLeftMotorPercent;
+    float frontRightMotorPercent;
+    float backCenterMotorPercent;
+    float backCenterServoPercent;
+
+    float heightScalar;
+
+    static const ServoController::pwmType frontLeftMotor = ServoController::pwm0;
+    static const ServoController::pwmType frontRightMotor = ServoController::pwm1;
+    static const ServoController::pwmType backCenterMotor = ServoController::pwm2;
+    static const ServoController::pwmType backCenterServo = ServoController::pwm3;
+
+    orientation_t ZERO;
+    static const float HEIGHT_TARGET = 12;
 };
 
 #endif /* MOTORCONTROL_HPP_ */
