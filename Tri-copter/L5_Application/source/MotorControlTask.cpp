@@ -16,10 +16,10 @@ bool MotorControlTask::init()
 
     setRunDuration(MOTOR_CONTROL_UPDATE);
 
-    motor_control.enablePort(frontLeftMotor);
-    motor_control.enablePort(frontRightMotor);
-    motor_control.enablePort(backCenterMotor);
-    servo_control.enablePort(backCenterServo);
+    motor_control.enablePort(frontLeftMotor); //p2.0
+    //motor_control.enablePort(frontRightMotor);
+    motor_control.enablePort(backCenterMotor); //p2.3
+    //servo_control.enablePort(backCenterServo);
 
     //Initialize speeds and servo positions
     //TODO: is there an initial startup procedure for the ESCs?
@@ -35,10 +35,10 @@ bool MotorControlTask::init()
     motor_control.setPercent(backCenterMotor, backCenterMotorPercent);
     servo_control.setPercent(backCenterServo, backCenterServoPercent); */
 
-    motor_control.setNextPosition(frontLeftMotor, .5f);
-    motor_control.setNextPosition(frontRightMotor, .5f);
-    motor_control.setNextPosition(backCenterMotor, .5f);
-    motor_control.setNextPosition(backCenterServo, .5f);
+    motor_control.setNextPosition(frontLeftMotor, -1.0f);
+    //motor_control.setNextPosition(frontRightMotor, .5f);
+    motor_control.setNextPosition(backCenterMotor, 1.0f);
+    //motor_control.setNextPosition(backCenterServo, .5f);
     return true;
 }
 

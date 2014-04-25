@@ -41,10 +41,13 @@ ServoController::ServoController():
 //Begin PWM output on this port
 bool ServoController::enablePort(pwmType port)
 {
+    //Enable the match 0 register
+    enableMask |= 1;
+
     if (port >= pwm1 && port <= pwm6)
     {
         //enable the port
-        enableMask |= 1 << port;
+        enableMask |= 1 << 1+port;
 
         // Pinsel the PWM
         LPC_PINCON->PINSEL4 &= ~(3 << (port*2));
@@ -81,6 +84,6 @@ void ServoController::setNextPosition(pwmType port, float orientation)
     }
 
     //enable pwm
-    LPC_PWM1->LER = 1 << enableMask;
+    LPC_PWM1->LER = enableMask;
 }
 
