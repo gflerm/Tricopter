@@ -1,26 +1,43 @@
 /*
- * ServoController.hpp
+ * ServoTask.hpp
  *
- *  Created on: Apr 22, 2014
- *      Author: Michael
+ *  Created on: Mar 21, 2014
+ *      Author: sloretz
  */
 
-#ifndef SERVOCONTROLLER_HPP_
-#define SERVOCONTROLLER_HPP_
+#ifndef SERVOTASK_HPP_
+#define SERVOTASK_HPP_
+#include <stdint.h>
 
-#include "PWMController.hpp"
+/*
+ * A servo class that allows a new pulse width value
+ * to be put to use immediately
+ */
 
-class ServoController : public PWMController
+class ServoController
 {
-public:
-      ServoController() : PWMController()
-      {
-          MIN_PULSE_TIME = .001;
-          MAX_PULSE_TIME = .002;
-      };
-      void setPercent(pwmType port, float percent);
-private:
+    public:
+        typedef enum {
+            pwm1=0, ///< P2.0
+            pwm2=1, ///< P2.1
+            pwm3=2, ///< P2.2
+            pwm4=3, ///< P2.0
+            pwm5=4, ///< P2.1
+            pwm6=5  ///< P2.2
+        } pwmType;
+
+        ServoController();
+
+
+        //Begin PWM output on this port
+        bool enablePort(pwmType port);
+
+        //Sets the next orientation of the servo
+        //value between -1.0f and 1.0f
+        void setNextPosition(pwmType port, float orientation);
+
+    private:
+        uint32_t enableMask;
 };
 
-
-#endif /* SERVOCONTROLLER_HPP_ */
+#endif /* SERVOTASK_HPP_ */

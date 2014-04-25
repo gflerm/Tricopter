@@ -9,7 +9,6 @@
 #define MOTORCONTROL_HPP_
 
 #include "scheduler_task.hpp"
-#include "MotorController.hpp"
 #include "ServoController.hpp"
 #include "10dof.hpp"
 
@@ -44,7 +43,7 @@ public:
     //Update the motor speed and servo position based on the orientation
     bool run(void* p);
 private:
-    MotorController motor_control;
+    ServoController motor_control;
     ServoController servo_control;
 
     //Pointer to orientation and height
@@ -77,7 +76,7 @@ private:
     static const ServoController::pwmType backCenterServo = ServoController::pwm4;
 
     orientation_t ZERO;
-    static const float HEIGHT_TARGET = 12;
+    static const float HEIGHT_TARGET = 12; //inches
 };
 
 #endif /* MOTORCONTROL_HPP_ */

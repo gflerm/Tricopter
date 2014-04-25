@@ -53,8 +53,6 @@ L5_Application/main.d: ../L5_Application/main.cpp \
  ../L5_Application/OrientationTask.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/eint.h \
  ../L5_Application/MotorControlTask.hpp \
- ../L5_Application/MotorController.hpp \
- ../L5_Application/PWMController.hpp \
  ../L5_Application/ServoController.hpp
 
 ../L5_Application/tasks.hpp:
@@ -166,9 +164,5 @@ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/lpc_pwm.hpp:
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/eint.h:
 
 ../L5_Application/MotorControlTask.hpp:
-
-../L5_Application/MotorController.hpp:
-
-../L5_Application/PWMController.hpp:
 
 ../L5_Application/ServoController.hpp:

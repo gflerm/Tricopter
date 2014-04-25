@@ -30,10 +30,15 @@ bool MotorControlTask::init()
     backCenterServoPercent = 50;
     heightScalar = 1;
 
-    motor_control.setPercent(frontLeftMotor, frontLeftMotorPercent);
+   /* motor_control.setPercent(frontLeftMotor, frontLeftMotorPercent);
     motor_control.setPercent(frontRightMotor, frontRightMotorPercent);
     motor_control.setPercent(backCenterMotor, backCenterMotorPercent);
-    servo_control.setPercent(backCenterServo, backCenterServoPercent);
+    servo_control.setPercent(backCenterServo, backCenterServoPercent); */
+
+    motor_control.setNextPosition(frontLeftMotor, .5f);
+    motor_control.setNextPosition(frontRightMotor, .5f);
+    motor_control.setNextPosition(backCenterMotor, .5f);
+    motor_control.setNextPosition(backCenterServo, .5f);
     return true;
 }
 
@@ -46,6 +51,8 @@ bool MotorControlTask::run(void* p)
     //Roll control
     //  Adjust speed of appropriate front motor
     //  if orientation to the right, increase FR motor
+
+    /*
     if (orientation->x > ZERO.x)
     {
         frontRightMotorPercent += SENSITIVITY_X;
@@ -99,6 +106,8 @@ bool MotorControlTask::run(void* p)
     motor_control.setPercent(frontLeftMotor, std::max(PERCENT_MAX, frontLeftMotorPercent * heightScalar));
     motor_control.setPercent(backCenterMotor, std::max(PERCENT_MAX, backCenterMotorPercent * heightScalar));
     servo_control.setPercent(backCenterServo, backCenterServoPercent);
+
+    */
 
     return true;
 }
