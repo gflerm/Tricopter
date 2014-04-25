@@ -5,8 +5,8 @@
  *      Author: sloretz
  */
 
-#ifndef SERVOTASK_HPP_
-#define SERVOTASK_HPP_
+#ifndef PWM_CTRL_HPP_
+#define PWM_CTRL_HPP_
 #include <stdint.h>
 
 /*
@@ -14,7 +14,7 @@
  * to be put to use immediately
  */
 
-class ServoController
+class PWMController
 {
     public:
         typedef enum {
@@ -26,8 +26,7 @@ class ServoController
             pwm6=5  ///< P2.2
         } pwmType;
 
-        ServoController();
-
+        PWMController();
 
         //Begin PWM output on this port
         bool enablePort(pwmType port);
@@ -36,8 +35,14 @@ class ServoController
         //value between -1.0f and 1.0f
         void setNextPosition(pwmType port, float orientation);
 
+        //Sets the pulse width percent (0-100) between MIN_PULSE and MAX_PULSE
+        void setPercent(pwmType port, float percent);
+
     private:
         uint32_t enableMask;
+
+        const static float MIN_PULSE = .001; //seconds
+        const static float MAX_PULSE = .002; //seconds
 };
 
 #endif /* SERVOTASK_HPP_ */

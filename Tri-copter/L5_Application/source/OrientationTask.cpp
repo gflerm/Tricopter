@@ -15,7 +15,6 @@ using namespace _10dof;
 
 static float total; // made global to simplify life.
 
-
 void distance_sensor(){ // Interrupt Handler
     if( LPC_GPIOINT->IO0IntStatR &(1<<DIST_PIN)){
         LPC_TIM3->TCR &= (1<<0); //enable pin
@@ -36,8 +35,14 @@ void distance_sensor(){ // Interrupt Handler
 
 bool OrientationTask::init()
 {
-    accel_sensor = &(Accelerometer::getInstance());
-    gyro_sensor = &(Gyroscope::getInstance());
+    setRunDuration(ORIENTATION_UPDATE_TIME);
+
+    orientation.x = 0;
+    orientation.y = 0;
+    orientation.z = 0;
+    orientation.height = 0;
+
+    orientation_queue = xQueueCreate(1, (sizeof(orientation_t)));
 
     //Height Sensor
     LPC_SC->PCONP |= (1<<23); // enable hardware timer 3
@@ -48,14 +53,8 @@ bool OrientationTask::init()
     LPC_GPIO1->FIODIR |= (1<<19); //SET PIN 1.19 to output
     eint3_enable_port0(DIST_PIN, eint_rising_edge, *distance_sensor);
 
-
-    orientation.x = 0;
-    orientation.y = 0;
-    orientation.z = 0;
-    velocity_vertical = 0;
-    height = 0;
-
-    setRunDuration(ORIENTATION_UPDATE_TIME);
+    accel_sensor = &(Accelerometer::getInstance());
+    gyro_sensor = &(Gyroscope::getInstance());
 
     if (accel_sensor->init() && gyro_sensor->init())
         return true;
@@ -68,9 +67,9 @@ orientation_t* OrientationTask::get_orientation()
     return &orientation;
 }
 
-float* OrientationTask::get_height()
+float OrientationTask::get_height()
 {
-    return &height;
+    return orientation.height;
 }
 
 bool OrientationTask::run(void* p)
@@ -92,10 +91,8 @@ bool OrientationTask::run(void* p)
     if (std::abs(gyro_data.z.word) > 250)
         orientation.z += toRadians((gyro_data.z.word)) * secondsSinceLastUpdate;
 
-
     //Calculate height in inches
-    height =(.120*total)/148; // should be .208 but .120 provides better result
-
+    orientation.height =(.120*total)/148; // should be .208 but .120 provides better result
 
     //~~~~~~~~~~NOTE: ACCELEROMETER AXES ARE OPPOSITE OF GYROSCOPE~~~~~~~~~~~~
     //Find the angle in radians from the acceleration data
@@ -113,6 +110,10 @@ bool OrientationTask::run(void* p)
         orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + toRadians(gyro_data.y.word) * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW * accel_calc.y);
    // }
+
+    //Place calculated orientation in queue for motor control to receive, if there's space
+    //If there's not, we don't care and we don't wait
+    xQueueSend(orientation_queue, &orientation, 0);
 
     return true;
 }

@@ -5,14 +5,14 @@
  *      Author: sloretz
  */
 
-#include <ServoController.hpp>
+#include "PWMController.hpp"
 #include "lpc_sys.h"
 #include <cstdio>
 
     //Help from http://openlpc.com/4e26f1/examples/pwm.lpc17xx
     //and lpc_pwm.hpp/cpp
 
-ServoController::ServoController():
+PWMController::PWMController():
     enableMask(0)
 {
     lpc_pconp(pconp_pwm1, true);
@@ -39,7 +39,7 @@ ServoController::ServoController():
 
 
 //Begin PWM output on this port
-bool ServoController::enablePort(pwmType port)
+bool PWMController::enablePort(pwmType port)
 {
     //Enable the match 0 register
     enableMask |= 1;
@@ -63,7 +63,7 @@ bool ServoController::enablePort(pwmType port)
 }
 
 
-void ServoController::setNextPosition(pwmType port, float orientation)
+void PWMController::setNextPosition(pwmType port, float orientation)
 {
     uint32_t pulseWidth;
     //(-1.0f,1000) (1.0f,2000)
@@ -71,6 +71,26 @@ void ServoController::setNextPosition(pwmType port, float orientation)
     //b = 1000 + 500 = 1500
    // pulseWidth = 500.0f * orientation + 1500;
     pulseWidth = sys_get_cpu_clock() *.001f *((orientation/2)+1.5f);
+    switch(port)
+    {
+        case pwm1: LPC_PWM1->MR1 = pulseWidth; break;
+        case pwm2: LPC_PWM1->MR2 = pulseWidth; break;
+        case pwm3: LPC_PWM1->MR3 = pulseWidth; break;
+        case pwm4: LPC_PWM1->MR4 = pulseWidth; break;
+        case pwm5: LPC_PWM1->MR5 = pulseWidth; break;
+        case pwm6: LPC_PWM1->MR6 = pulseWidth; break;
+        default:
+            break;
+    }
+
+    //enable pwm
+    LPC_PWM1->LER = enableMask;
+}
+
+void PWMController::setPercent(pwmType port, float percent)
+{
+    uint32_t pulseWidth = sys_get_cpu_clock() * ( (percent/100 * (MAX_PULSE - MIN_PULSE) ) + MIN_PULSE );
+
     switch(port)
     {
         case pwm1: LPC_PWM1->MR1 = pulseWidth; break;

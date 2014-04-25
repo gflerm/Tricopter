@@ -110,7 +110,7 @@ TaskHandle_t debugtask;
 int main(void)
 {
     OrientationTask* orientation = new OrientationTask();
-    MotorControlTask* control = new MotorControlTask(orientation->get_orientation(), orientation->get_height());
+    MotorControlTask* control = new MotorControlTask(orientation->get_queue_handle());
 
 	terminalTask *term = new terminalTask(PRIORITY_MEDIUM);
     //g_servos = new ServoController();
@@ -130,7 +130,6 @@ int main(void)
 	//vTaskStartScheduler();
     xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_HIGH, &debugtask);
     scheduler_start(true);
-
 
     delete orientation;
     delete control;

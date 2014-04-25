@@ -32,6 +32,7 @@ public:
 
      //run()
      //Calculates the orientation. Is called automatically by the scheduler
+     //Idea from:
      //NOTE: For this function to work properly, it needs to be called every
      //      ORIENTATION_UDPATE_TIME ms; this is accomplished with a call to
      //      scheduler_task::setRunDuration() in init()
@@ -39,7 +40,15 @@ public:
 
      //get_orientation()
      //Returns a pointer to the orientation of the tricopter, in radians
+     //For debug only
      orientation_t* get_orientation();
+
+     //get_queue_handle
+     //Returns the orientation queue handle
+     QueueHandle_t get_queue_handle()
+     {
+         return orientation_queue;
+     }
 
      three_axis_info_t get_raw_accel()
      {
@@ -51,13 +60,13 @@ public:
      }
 
      //get_height()
-     //Returns a pointer to the height, in meters
-     float* get_height();
+     //Returns the height, in inches
+     float get_height();
 
 private:
+     //Stores the calculated orientation
+     QueueHandle_t orientation_queue;
      orientation_t orientation;
-     float height;
-     float velocity_vertical;
 
      Accelerometer* accel_sensor;
      Gyroscope* gyro_sensor;
