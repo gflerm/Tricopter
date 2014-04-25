@@ -66,7 +66,8 @@ L5_Application/source/cmd_handlers/handlers.d: \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils\tlm/c_tlm_stream.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils\tlm/c_tlm_comp.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/c_list.h \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils\tlm/c_tlm_var.h
+ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils\tlm/c_tlm_var.h \
+ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/PWMController.hpp
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/FreeRTOS.h:
 
@@ -201,3 +202,5 @@ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils\tlm/c_tlm_comp.h
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/c_list.h:
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils\tlm/c_tlm_var.h:
+
+C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/PWMController.hpp:

@@ -79,6 +79,12 @@ private:
      static const float FILTER_PERCENT_HIGH = .98;
      static const float FILTER_PERCENT_LOW = .02;
 
+     //Gyro noise filter
+     static const float GYRO_NOISE_FLOOR = 250;
+
+     //Ultrasonic height sensor filter
+     static const float HSENSOR_CEILING = 50;
+
      //These should be set depending upon the output range of the accelerometer
      //i.e., if the output range is 10 bits and the g-range is +-2g then a reasonable
      //value would be between ~640 (.5g on only one axis) to ~2304 (3g over all axes)

@@ -32,7 +32,6 @@ void distance_sensor(){ // Interrupt Handler
     }
 }
 
-
 bool OrientationTask::init()
 {
     setRunDuration(ORIENTATION_UPDATE_TIME);
@@ -88,11 +87,14 @@ bool OrientationTask::run(void* p)
     //Integrate gyroscope data
     orientation.x += toRadians((gyro_data.x.word)) * secondsSinceLastUpdate;
     orientation.y += toRadians((gyro_data.y.word)) * secondsSinceLastUpdate;
-    if (std::abs(gyro_data.z.word) > 250)
+    if (std::abs(gyro_data.z.word) > GYRO_NOISE_FLOOR)
         orientation.z += toRadians((gyro_data.z.word)) * secondsSinceLastUpdate;
 
     //Calculate height in inches
-    orientation.height =(.120*total)/148; // should be .208 but .120 provides better result
+    //orientation.height =(.120*total)/148; // should be .208 but .120 provides better result
+    float read_height = (.120 * total) / 148;
+    if (read_height < HSENSOR_CEILING)
+        orientation.height = read_height;
 
     //~~~~~~~~~~NOTE: ACCELEROMETER AXES ARE OPPOSITE OF GYROSCOPE~~~~~~~~~~~~
     //Find the angle in radians from the acceleration data

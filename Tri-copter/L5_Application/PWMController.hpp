@@ -8,13 +8,14 @@
 #ifndef PWM_CTRL_HPP_
 #define PWM_CTRL_HPP_
 #include <stdint.h>
+#include "singleton_template.hpp"
 
 /*
  * A servo class that allows a new pulse width value
  * to be put to use immediately
  */
 
-class PWMController
+class PWMController: public SingletonTemplate<PWMController>
 {
     public:
         typedef enum {
@@ -26,7 +27,7 @@ class PWMController
             pwm6=5  ///< P2.2
         } pwmType;
 
-        PWMController();
+        bool init();   ///< Initializes the controller
 
         //Begin PWM output on this port
         bool enablePort(pwmType port);
@@ -39,7 +40,9 @@ class PWMController
         void setPercent(pwmType port, float percent);
 
     private:
+        friend class SingletonTemplate<PWMController>;
         uint32_t enableMask;
+        PWMController();
 
         const static float MIN_PULSE = .001; //seconds
         const static float MAX_PULSE = .002; //seconds

@@ -12,6 +12,11 @@
     //Help from http://openlpc.com/4e26f1/examples/pwm.lpc17xx
     //and lpc_pwm.hpp/cpp
 
+bool PWMController::init()
+{
+    return true;
+}
+
 PWMController::PWMController():
     enableMask(0)
 {

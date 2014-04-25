@@ -19,10 +19,10 @@ L5_Application/source/MotorControlTask.d: \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/task.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/list.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/PWMController.hpp \
+ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/singleton_template.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/10dof.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO/src/I2C_Device_Base.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/I2C2.hpp \
- C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/singleton_template.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers\base/i2c_base.hpp \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/semphr.h \
  C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/queue.h \
@@ -66,13 +66,13 @@ C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L1_FreeRTOS\include/list.
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/PWMController.hpp:
 
+C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/singleton_template.hpp:
+
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L5_Application/10dof.hpp:
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L4_IO/src/I2C_Device_Base.hpp:
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers/I2C2.hpp:
-
-C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L3_Utils/singleton_template.hpp:
 
 C:\Users\Michael\Documents\GitHub\Tricopter\Tri-copter\L2_Drivers\base/i2c_base.hpp:
 

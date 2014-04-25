@@ -27,6 +27,9 @@
 
 #include "command_handler.hpp"
 
+CMD_HANDLER_FUNC(pwm_set);
+CMD_HANDLER_FUNC(killcopter);
+
 /// Handler for task list & CPU Information
 CMD_HANDLER_FUNC(taskListHandler);
 

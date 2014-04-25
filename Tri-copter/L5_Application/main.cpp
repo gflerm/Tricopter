@@ -97,7 +97,23 @@ void debugTask(void* p)
         printf("Orientation x: %f\n", orientation->get_orientation()->x);
         printf("Orientation y: %f\n", orientation->get_orientation()->y);
         printf("Orientation z: %f\n", orientation->get_orientation()->z);
-       // printf("Height: %f\n", *(orientation->get_height()));
+        printf("Height: %f\n", orientation->get_orientation()->height);
+        vTaskDelay(500);
+    }
+}
+
+void debugMotorTask(void* p)
+{
+    printf("Entering debug task\n\n\n\n");
+    MotorControlTask* control = (MotorControlTask*)p;
+    while (true)
+    {
+        orientation_t percentage = control->getMotorPercent();
+        printf("~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        printf("Front right motor: %f\n", percentage.x);
+        printf("Front left motor: %f\n", percentage.y);
+        printf("Back center motor: %f\n", percentage.z);
+        printf("Back center servo: %f\n", percentage.height);
         vTaskDelay(500);
     }
 }
@@ -107,8 +123,20 @@ TaskHandle_t calibration;
 TaskHandle_t display;
 TaskHandle_t bm_calibraiton;
 TaskHandle_t debugtask;
+TaskHandle_t debugmotortask;
 int main(void)
 {
+   /* PWMController &pwm = PWMController::getInstance();
+    pwm.init(); //just in case, not really necessary
+    pwm.enablePort(PWMController::pwm1);
+    pwm.enablePort(PWMController::pwm2);
+    pwm.enablePort(PWMController::pwm3);
+    pwm.enablePort(PWMController::pwm4);
+    pwm.setPercent(PWMController::pwm1, 0.0f);
+    pwm.setPercent(PWMController::pwm2, 0.0f);
+    pwm.setPercent(PWMController::pwm3, 0.0f);
+    pwm.setPercent(PWMController::pwm4, 0.0f); */
+
     OrientationTask* orientation = new OrientationTask();
     MotorControlTask* control = new MotorControlTask(orientation->get_queue_handle());
 
@@ -128,7 +156,8 @@ int main(void)
     //xTaskCreate(debug_trigger, "trig", 256, 0,PRIORITY_HIGH, &debugHandle);
 
 	//vTaskStartScheduler();
-    xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_HIGH, &debugtask);
+    xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_MEDIUM, &debugtask);
+    //xTaskCreate(debugMotorTask, "debugmotortask", 4096, ((void*)control), PRIORITY_MEDIUM, &debugmotortask);
     scheduler_start(true);
 
     delete orientation;

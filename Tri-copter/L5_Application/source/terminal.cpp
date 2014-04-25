@@ -101,6 +101,9 @@ bool terminalTask::taskEntry()
     cp.addHandler(learnIrHandler,  "learn",    "Begin to learn IR codes for numbers 0-9");
     cp.addHandler(wirelessHandler, "wireless", "Use 'wireless' to see the nested commands");
 
+    cp.addHandler(pwm_set, "pwmset", "pwmset <port 1-6> <percent 0-100>");
+    cp.addHandler(killcopter, "kill", "Kill all motors");
+
     /* Firmware upgrade handlers
      * Please read "netload_readme.txt" at ref_and_datasheets directory.
      */

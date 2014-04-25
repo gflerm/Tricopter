@@ -44,6 +44,69 @@
 
 #include "c_tlm_stream.h"
 #include "c_tlm_var.h"
+#include "PWMController.hpp"
+
+CMD_HANDLER_FUNC(killcopter)
+{
+    PWMController &pwm = PWMController::getInstance();
+    pwm.setPercent(PWMController::pwm1, 0.0f);
+    pwm.setPercent(PWMController::pwm2, 0.0f);
+    pwm.setPercent(PWMController::pwm3, 0.0f);
+
+    return true;
+}
+
+CMD_HANDLER_FUNC(pwm_set)
+{
+    PWMController &pwm = PWMController::getInstance();
+
+    //pwmset <pwm_port 1-6> <pwm_percent 0-1>
+    //cmdParams
+    //output
+    output.printf("<%s>", cmdParams.c_str());
+    int space_pos = cmdParams.firstIndexOf(" ");
+    if (space_pos == -1)
+    {
+        output.printf("could not find space\n");
+        return false;
+    }
+
+    str firstArg = cmdParams.subString(0,space_pos);
+    if (!firstArg.getLen())
+    {
+        output.printf("Could not find first argument space_pos: %d\n", space_pos);
+        return false;
+    }
+
+    str secondArg = cmdParams.subString(space_pos+1);
+    if (!secondArg.getLen())
+    {
+        output.printf("Could not find second argument\n");
+        return false;
+    }
+
+    int port = (int) firstArg;
+    float percent = (float) secondArg;
+
+    if (port < 1 || port > 6)
+    {
+        output.printf("port must be in [1,6]\n");
+        return false;
+    }
+    PWMController::pwmType pwmPort = static_cast<PWMController::pwmType>( port - 1);
+
+   // if (percent < 0.0f || port > 100.0f)
+   // {
+    //    output.printf("percent must be in range [0,100]");
+   //     return false;
+   // }
+
+    pwm.setPercent(pwmPort, percent);
+
+    output.printf("Set pwm port %d to %f\n", port, percent);
+
+    return true;
+}
 
 
 
