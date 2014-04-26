@@ -71,6 +71,17 @@ private:
      Accelerometer* accel_sensor;
      Gyroscope* gyro_sensor;
 
+     three_axis_info_t accel_data;
+     three_axis_info_t gyro_data;
+     orientation_t accel_calc;
+
+     uint16_t accel_magnitude;
+
+     //Use this to filter out garbage from ultrasonic sensor data readings
+     float lastHeight;
+     static const float APPROX_INIT_HEIGHT = 2; //lastHeight will be initialized to this value
+     static const float HEIGHT_CHANGE_THRESHOLD = 3; //inches
+
      //Task control settings
      static const int STACK_SIZE_BYTES = 4096;
      static const float ORIENTATION_UPDATE_TIME =  5; //ms, want to run this task as often as possible
@@ -82,9 +93,6 @@ private:
      //Gyro noise filter
      static const float GYRO_NOISE_FLOOR = 250;
 
-     //Ultrasonic height sensor filter
-     static const float HSENSOR_CEILING = 50;
-
      //These should be set depending upon the output range of the accelerometer
      //i.e., if the output range is 10 bits and the g-range is +-2g then a reasonable
      //value would be between ~640 (.5g on only one axis) to ~2304 (3g over all axes)
@@ -95,16 +103,18 @@ private:
      static const float GRAVITY_ACCEL = 9.81;
      static const double PI = 3.1415926;
 
-     three_axis_info_t accel_data;
-     three_axis_info_t gyro_data;
-     orientation_t accel_calc;
-
-     uint16_t accel_magnitude;
-
-     //Accel sensor gives 4mg/bit
+     //Converts data received by accel sensor to something more usable
+     //   -> 4mg per bit to meters per second squared
      inline float toMetersPerSecondSq(int mg)
      {
          return mg * GRAVITY_ACCEL * 4 / 1000;
+     }
+
+     //Converts data received by gyroscope to something more usuable
+     //  -> milli degrees per second to radians per second
+     inline float toRadians(float millidegrees)
+     {
+         return (millidegrees / 1000.0) / 180 * PI;
      }
 
      //Converts from milliseconds to seconds
@@ -113,10 +123,17 @@ private:
          return milliseconds / 1000.0;
      }
 
-     //Converts from milli degrees to radians
-     inline float toRadians(float millidegrees)
+     bool isValidUltrasonicReading(float height)
      {
-         return (millidegrees / 1000.0) / 180 * PI;
+         if (fabs(height - lastHeight) < HEIGHT_CHANGE_THRESHOLD)
+         {
+             lastHeight = height;
+             return true;
+         }
+         else
+         {
+             return false;
+         }
      }
 };
 

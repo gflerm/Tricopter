@@ -52,6 +52,8 @@ bool OrientationTask::init()
     LPC_GPIO1->FIODIR |= (1<<19); //SET PIN 1.19 to output
     eint3_enable_port0(DIST_PIN, eint_rising_edge, *distance_sensor);
 
+    lastHeight = APPROX_INIT_HEIGHT;
+
     accel_sensor = &(Accelerometer::getInstance());
     gyro_sensor = &(Gyroscope::getInstance());
 
@@ -94,7 +96,7 @@ bool OrientationTask::run(void* p)
     //Calculate height in inches
     //orientation.height =(.120*total)/148; // should be .208 but .120 provides better result
     float read_height = (.120 * total) / 148;
-    if (read_height < HSENSOR_CEILING)
+    if (isValidUltrasonicReading(read_height))
         orientation.height = read_height;
 
     //~~~~~~~~~~NOTE: ACCELEROMETER AXES ARE OPPOSITE OF GYROSCOPE~~~~~~~~~~~~

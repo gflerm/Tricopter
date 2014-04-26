@@ -45,18 +45,6 @@ public:
     //Checks fail safe conditions, then updates motor/servo control
     bool run(void* p);
 
-    //~~~~~delete this stuff after deubgging~~~~~~~~~~
-    orientation_t motor_percentage;
-    //getPercent
-    //returns motor percent for debugging purposes
-    orientation_t getMotorPercent()
-    {
-        motor_percentage.x = frontLeftMotorPercent;
-        motor_percentage.y = frontRightMotorPercent;
-        motor_percentage.z = backCenterMotorPercent;
-        motor_percentage.height = backCenterServoPercent;
-        return motor_percentage;
-    }
 private:
     //checkFailSafe
     //Returns TRUE if fail safe conditions are violated, FALSE otherwise
@@ -64,6 +52,10 @@ private:
 
     //updateMotorSpeed
     //Updates the speed of the motors and servo position based on orientation
+    //Each motor has a base percentage (ex FRONT_RIGHT_PERCENT) upon which the actual speed is calculated
+    //  -> First, a correction based on orientation is calculated. This is added to the base percent.
+    //  -> The result of that is then scaled by the height scalar depending upon whether we want to be
+    //     higher or lower
     void updateMotorServoControl();
 
     //killMotors
@@ -76,6 +68,10 @@ private:
 
     //Returns true if tickCount <= MIN_SEC
     bool isNotReady();
+
+    //Keeps a percentage in range of [PERCENT_MIN_xxx, PERCENT_MAX_xxx]
+    float inRangeMotor(float motorPercent);
+    float inRangeServo(float servoPercent);
 
     //getOrientationFromQueue
     //fills orientation variable
@@ -92,13 +88,12 @@ private:
     //Last received orientation and height
     orientation_t orientation;
 
-    //For timer purposes, so we can kill the power after a certain time
-    //The motor control task should run ~50 times/sec, want to kill after 30 sec, => 1500
-    const static int MAX_SEC = 45;
-    const static int MIN_SEC = 5;
-
     //Incremented every time the run() function is called
     int tickCount;
+
+    //Increases/decreases all motor speeds based on height
+    float heightScalar;
+    float currentHeightTarget;
 
     //Task control settings
     static const int STACK_SIZE_BYTES = 4096;
@@ -106,16 +101,35 @@ private:
     //How often the motor control task should run
     static const int MOTOR_CONTROL_UPDATE = 200; //ms, we can update the motor control at most 50 times/sec
 
+    //For timer purposes, so we can kill the power after a certain time
+    const static int MAX_SEC = 45;
+    const static int MIN_SEC = 5;
+
     //Maximum orientation angles before we kill the motors
     static const float MAX_X_ANGLE = .349; //20 degrees on x and y, don't really care about z
     static const float MAX_Y_ANGLE = .349;
     static const float MAX_HEIGHT = 12; //inches
 
-    //Calibration settings
-    static const float SENSITIVITY_X = 30; //scalar for how fast the motors should spin up
-    static const float SENSITIVITY_Y = 40;
-    static const float SENSITIVITY_Z = .05;
+    //PWM port assignments
+    static const PWMController::pwmType frontLeftMotor = PWMController::pwm1;  //2.0
+    static const PWMController::pwmType frontRightMotor = PWMController::pwm2; //2.1
+    static const PWMController::pwmType backCenterMotor = PWMController::pwm3; //2.2
+    static const PWMController::pwmType backCenterServo = PWMController::pwm4; //2.3
+
+    //~~~~~~~~~~~~~~~~~ CALIBRATION SETTINGS ~~~~~~~~~~~~~~~~~~~~~~~~~
+    //These are base percentages that should be set to values which cause the tricopter to
+    //almost hover in a somewhat stable position
+    static const float FRONT_LEFT_PERCENT = 43;
+    static const float FRONT_RIGHT_PERCENT = 49;
+    static const float BACK_CENTER_PERCENT = 58;
+    static const float SERVO_PERCENT = 46;
+
+    //Sensitivity settings
+    static const float SENSITIVITY_X = 1; //scalar for how fast the motors should spin up
+    static const float SENSITIVITY_Y = 1;
+    static const float SENSITIVITY_Z = 1; //servo
     static const float SENSITIVITY_HEIGHT = .005; //percent
+    static const float CORRECTION_DEGREE = 2; //1 = linear, 2 = quadratic, etc
 
     //Targets for hovering
     static const float ZERO_X = .038; //radians
@@ -123,24 +137,11 @@ private:
     static const float ZERO_Z = 0;
     static const float HOVER_HEIGHT_TARGET = 6; //inches
 
-    static const float PERCENT_MAX = 50;
-    static const float PERCENT_MIN = 9;
+    //Limits for motor speed and servo position
+    static const float PERCENT_MAX_MOTOR = 70;
+    static const float PERCENT_MIN_MOTOR = 9;
     static const float PERCENT_MAX_SERVO = 100;
     static const float PERCENT_MIN_SERVO = 0;
-
-    float frontLeftMotorPercent;
-    float frontRightMotorPercent;
-    float backCenterMotorPercent;
-    float backCenterServoPercent;
-
-    //Increases/decreases all motor speeds based on height
-    float heightScalar;
-    float currentHeightTarget;
-
-    static const PWMController::pwmType frontLeftMotor = PWMController::pwm1;  //2.0
-    static const PWMController::pwmType frontRightMotor = PWMController::pwm2; //2.1
-    static const PWMController::pwmType backCenterMotor = PWMController::pwm3; //2.2
-    static const PWMController::pwmType backCenterServo = PWMController::pwm4; //2.3
 };
 
 #endif /* MOTORCONTROL_HPP_ */
