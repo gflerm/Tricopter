@@ -126,7 +126,7 @@ TaskHandle_t debugtask;
 TaskHandle_t debugmotortask;
 int main(void)
 {
-   /* PWMController &pwm = PWMController::getInstance();
+    PWMController &pwm = PWMController::getInstance();
     pwm.init(); //just in case, not really necessary
     pwm.enablePort(PWMController::pwm1);
     pwm.enablePort(PWMController::pwm2);
@@ -135,7 +135,7 @@ int main(void)
     pwm.setPercent(PWMController::pwm1, 0.0f);
     pwm.setPercent(PWMController::pwm2, 0.0f);
     pwm.setPercent(PWMController::pwm3, 0.0f);
-    pwm.setPercent(PWMController::pwm4, 0.0f); */
+    pwm.setPercent(PWMController::pwm4, 50.0f);
 
     OrientationTask* orientation = new OrientationTask();
     MotorControlTask* control = new MotorControlTask(orientation->get_queue_handle());
@@ -147,7 +147,7 @@ int main(void)
 
     scheduler_add_task(term);
     scheduler_add_task(orientation);
-    scheduler_add_task(control);
+  //  scheduler_add_task(control);
    // xTaskCreate(user_calibration, "calibrate", 1024, &Main_axis, PRIORITY_CRITICAL, &calibration);
 
     //g_servos->enablePort(ServoController::pwm1);

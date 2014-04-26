@@ -271,15 +271,15 @@ static bool hl_init_board_io(void)
 {
     bool success = true;
 
-    if(!AS.init()) { puts("ERROR: Acceleration Sensor"); success = false; }
-    if(!TS.init()) { puts("ERROR: Temperature Sensor"); success = false; }
-    if(!LD.init()) { puts("ERROR: 7-Segment Display"); success = false; }
+//    if(!AS.init()) { puts("ERROR: Acceleration Sensor"); success = false; }
+ //   if(!TS.init()) { puts("ERROR: Temperature Sensor"); success = false; }
+ //   if(!LD.init()) { puts("ERROR: 7-Segment Display"); success = false; }
 
     /* These devices don't have a way to check if init() failed */
-    IS.init(); // IR sensor
-    LS.init(); // Light sensor
-    LE.init(); // LEDs
-    SW.init(); // Switches
+  //  IS.init(); // IR sensor
+  //  LS.init(); // Light sensor
+   // LE.init(); // LEDs
+   // SW.init(); // Switches
 
     /* Turn off all LEDs */
     LE.setAll(0);

@@ -32,7 +32,7 @@ public:
     //MotorControlTask()
     //Supplies some default values to the scheduler_task constructor
     MotorControlTask(QueueHandle_t or_queue)
-                   : scheduler_task("motor_control_task", STACK_SIZE_BYTES, PRIORITY_HIGH, NULL)
+                   : scheduler_task("motor_control_task", STACK_SIZE_BYTES, PRIORITY_MEDIUM, NULL)
     {
         orientation_queue = or_queue;
     };
@@ -104,27 +104,28 @@ private:
     static const int STACK_SIZE_BYTES = 4096;
 
     //How often the motor control task should run
-    static const int MOTOR_CONTROL_UPDATE = 20; //ms, we can update the motor control at most 50 times/sec
+    static const int MOTOR_CONTROL_UPDATE = 200; //ms, we can update the motor control at most 50 times/sec
 
     //Maximum orientation angles before we kill the motors
-    static const float MAX_X_ANGLE = .78; //45 degrees on x and y, don't really care about z
-    static const float MAX_Y_ANGLE = .78;
+    static const float MAX_X_ANGLE = .349; //20 degrees on x and y, don't really care about z
+    static const float MAX_Y_ANGLE = .349;
     static const float MAX_HEIGHT = 12; //inches
 
     //Calibration settings
-    static const float SENSITIVITY_X = 10; //scalar for how fast the motors should spin up
-    static const float SENSITIVITY_Y = 10;
+    static const float SENSITIVITY_X = 30; //scalar for how fast the motors should spin up
+    static const float SENSITIVITY_Y = 40;
     static const float SENSITIVITY_Z = .05;
-    static const float SENSITIVITY_HEIGHT = .1;
+    static const float SENSITIVITY_HEIGHT = .005; //percent
 
     //Targets for hovering
-    static const float ZERO_X = .045; //radians
-    static const float ZERO_Y = -.031;
+    static const float ZERO_X = .038; //radians
+    static const float ZERO_Y = -.054;
     static const float ZERO_Z = 0;
     static const float HOVER_HEIGHT_TARGET = 6; //inches
 
-    static const float PERCENT_MAX = 100;
-    static const float PERCENT_MIN = 58;
+    static const float PERCENT_MAX = 50;
+    static const float PERCENT_MIN = 9;
+    static const float PERCENT_MAX_SERVO = 100;
     static const float PERCENT_MIN_SERVO = 0;
 
     float frontLeftMotorPercent;

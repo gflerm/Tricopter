@@ -27,10 +27,11 @@ bool MotorControlTask::init()
     //Initialize speeds and servo positions
     //TODO: is there an initial startup procedure for the ESCs?
 
-    frontLeftMotorPercent = PERCENT_MIN;
-    frontRightMotorPercent = PERCENT_MIN;
-    backCenterMotorPercent = PERCENT_MIN + 15;
-    backCenterServoPercent = PERCENT_MIN;
+    //Start: 43, 49, 58
+    frontLeftMotorPercent = PERCENT_MIN + 30;
+    frontRightMotorPercent = PERCENT_MIN + 35;
+    backCenterMotorPercent = PERCENT_MIN + 55;
+    backCenterServoPercent = 50;
     heightScalar = 1;
     currentHeightTarget = HOVER_HEIGHT_TARGET;
 
@@ -60,62 +61,75 @@ void MotorControlTask::updateMotorServoControl()
     //  Adjust speed of appropriate front motor
     //  We have a choice of either decreasing one or increasing the other
     //  Try to be smart about it, and increase if we're below height target, decrease otherwise
+
+    /*
+    float rollIncAmt = (SENSITIVITY_X * fabs(orientation.x - ZERO_X));
     if (orientation.x > ZERO_X)
     {
-        if (orientation.height > currentHeightTarget)
+        //If we've rolled right
+        if (frontLeftMotorPercent > frontRightMotorPercent)
         {
-            if (frontLeftMotorPercent - SENSITIVITY_X >= PERCENT_MIN)
-                frontLeftMotorPercent -= SENSITIVITY_X * pow(abs(orientation.x - ZERO_X), 2);
+            if (frontLeftMotorPercent - rollIncAmt >= PERCENT_MIN)
+                frontLeftMotorPercent -= rollIncAmt;
         }
         else
         {
-            if (frontRightMotorPercent + SENSITIVITY_X <= PERCENT_MAX)
-                frontRightMotorPercent += SENSITIVITY_X * pow(abs(orientation.x - ZERO_X), 2);
+            if (frontRightMotorPercent + rollIncAmt <= PERCENT_MAX)
+                frontRightMotorPercent += rollIncAmt;
         }
     }
     else if (orientation.x < ZERO_X)
     {
-        if (orientation.height > currentHeightTarget)
+        if (frontRightMotorPercent > frontLeftMotorPercent)
         {
-            if (frontRightMotorPercent - SENSITIVITY_X >= PERCENT_MIN)
-                frontRightMotorPercent -= SENSITIVITY_X * abs(orientation.x - ZERO_X);
+            if (frontRightMotorPercent - rollIncAmt >= PERCENT_MIN)
+                frontRightMotorPercent -= rollIncAmt;
         }
         else
         {
-            if (frontLeftMotorPercent + SENSITIVITY_X <= PERCENT_MAX)
-                frontLeftMotorPercent += SENSITIVITY_X * abs(orientation.x - ZERO_X);
+            if (frontLeftMotorPercent + rollIncAmt <= PERCENT_MAX)
+                frontLeftMotorPercent += rollIncAmt;
         }
     }
 
     //Pitch control
     //  Adjust speed of both front motors
-    if (orientation.y < ZERO_Y)
+    float pitchIncAmt = SENSITIVITY_Y * fabs(orientation.y - ZERO_Y);
+    if (orientation.y > ZERO_Y)
     {
-        if (frontLeftMotorPercent + SENSITIVITY_Y <= PERCENT_MAX)
-            frontLeftMotorPercent += SENSITIVITY_Y * abs(orientation.y - ZERO_Y);
-        if (frontRightMotorPercent + SENSITIVITY_Y <= PERCENT_MAX)
-            frontRightMotorPercent += SENSITIVITY_Y * abs(orientation.y - ZERO_Y);
+
+      //.  if (frontLeftMotorPercent + (pitchIncAmt) <= PERCENT_MAX)
+      //      frontLeftMotorPercent += pitchIncAmt;
+      //  if (frontRightMotorPercent + (pitchIncAmt) <= PERCENT_MAX)
+      //      frontRightMotorPercent += pitchIncAmt;
+        if (backCenterMotorPercent + pitchIncAmt <= PERCENT_MAX)
+            backCenterMotorPercent += pitchIncAmt;
     }
-    else if (orientation.y > ZERO_Y)
+    else if (orientation.y < ZERO_Y)
     {
-        if (frontLeftMotorPercent - SENSITIVITY_Y >= PERCENT_MAX)
-            frontLeftMotorPercent -= SENSITIVITY_Y * abs(orientation.y - ZERO_Y);
-        if (frontRightMotorPercent - SENSITIVITY_Y >= PERCENT_MAX)
-            frontRightMotorPercent -= SENSITIVITY_Y * abs(orientation.y - ZERO_Y);
+
+      //  if (frontLeftMotorPercent - (pitchIncAmt) >= PERCENT_MAX)
+      //      frontLeftMotorPercent -= pitchIncAmt;
+       // if (frontRightMotorPercent - (pitchIncAmt) >= PERCENT_MAX)
+       //     frontRightMotorPercent -= pitchIncAmt;
+        if (backCenterMotorPercent - pitchIncAmt >= PERCENT_MIN)
+            backCenterMotorPercent -= pitchIncAmt;
     }
+
 
     //Yaw control
     //  Adjust servo position, maybe adjust back motor speed?
+   /* float yawIncAmt = SENSITIVITY_Z;
     if (orientation.z > ZERO_Z)
     {
-        if (backCenterServoPercent - SENSITIVITY_Z > PERCENT_MIN_SERVO)
-            backCenterServoPercent -= SENSITIVITY_Z;
+        if (backCenterServoPercent - yawIncAmt > PERCENT_MIN_SERVO)
+            backCenterServoPercent -= yawIncAmt;
     }
     else if (orientation.z < ZERO_Z)
     {
-        if (backCenterServoPercent + SENSITIVITY_Z < PERCENT_MAX)
-            backCenterServoPercent += SENSITIVITY_Z;
-    }
+        if (backCenterServoPercent + yawIncAmt < PERCENT_MAX_SERVO)
+            backCenterServoPercent += yawIncAmt;
+    } */
 
    //Height control
    //  scale all percents by whether we are too low/high
@@ -138,9 +152,10 @@ void MotorControlTask::updateMotorServoControl()
        pwm_control.setPercent(frontLeftMotor, std::min(PERCENT_MAX, frontLeftMotorPercent * heightScalar));
        pwm_control.setPercent(backCenterMotor, std::min(PERCENT_MAX, backCenterMotorPercent * heightScalar));
 
-       printf("Front right motor: %f\n", std::min(PERCENT_MAX, frontRightMotorPercent * heightScalar));
-       printf("Front left motor: %f\n", std::min(PERCENT_MAX, frontLeftMotorPercent * heightScalar));
-       printf("Back center motor: %f\n", std::min(PERCENT_MAX, backCenterMotorPercent * heightScalar));
+      // printf("Front right motor: %f\n", std::min(PERCENT_MAX, frontRightMotorPercent * heightScalar));
+      // printf("Front left motor: %f\n", std::min(PERCENT_MAX, frontLeftMotorPercent * heightScalar));
+       //printf("Back center motor: %f\n", std::min(PERCENT_MAX, backCenterMotorPercent * heightScalar));
+
    }
    else if (heightScalar <= 1) //don't go below PERCENT_MIN after height scaling
    {
@@ -148,12 +163,14 @@ void MotorControlTask::updateMotorServoControl()
        pwm_control.setPercent(frontLeftMotor, std::max(PERCENT_MIN, frontLeftMotorPercent * heightScalar));
        pwm_control.setPercent(backCenterMotor, std::max(PERCENT_MIN, backCenterMotorPercent * heightScalar));
 
-       printf("Front right motor: %f\n", std::max(PERCENT_MIN, frontRightMotorPercent * heightScalar));
-       printf("Front left motor: %f\n", std::max(PERCENT_MIN, frontLeftMotorPercent * heightScalar));
-       printf("Back center motor: %f\n", std::max(PERCENT_MIN, backCenterMotorPercent * heightScalar));
+      // printf("Front right motor: %f\n", std::max(PERCENT_MIN, frontRightMotorPercent * heightScalar));
+      // printf("Front left motor: %f\n", std::max(PERCENT_MIN, frontLeftMotorPercent * heightScalar));
+      // printf("Back center motor: %f\n", std::max(PERCENT_MIN, backCenterMotorPercent * heightScalar));
    }
 
    pwm_control.setPercent(backCenterServo, backCenterServoPercent);
+  // printf("Back center servo: %f \n", backCenterServoPercent);
+  // printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 }
 
 bool MotorControlTask::violatesFailSafe()
@@ -202,6 +219,7 @@ void MotorControlTask::getOrientationFromQueue()
 
 bool MotorControlTask::run(void* p)
 {
+   // printf("m\n");
     tickCount++;
 
     getOrientationFromQueue();

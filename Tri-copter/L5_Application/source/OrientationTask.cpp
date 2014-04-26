@@ -73,11 +73,12 @@ float OrientationTask::get_height()
 
 bool OrientationTask::run(void* p)
 {
+   // printf("o\n");
     float secondsSinceLastUpdate = toSeconds(ORIENTATION_UPDATE_TIME);
 
     //Grab height info from Ultra sonic sensor (needs around 500us after going low)
     LPC_GPIO1->FIOSET |= (1<<19); // set high
-    delay_ms(20);
+    delay_us(10);
     LPC_GPIO1->FIOCLR |= (1<<19); // set low
 
     //Grab info from accelerometer and gyroscope
