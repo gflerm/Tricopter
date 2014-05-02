@@ -22,9 +22,9 @@ bool MotorControlTask::init()
     pwm_control.enablePort(frontLeftMotor);  //p2.0
     pwm_control.enablePort(frontRightMotor); //p2.1
     pwm_control.enablePort(backCenterMotor); //p2.2
-    pwm_control.enablePort(backCenterServo); //p2.4
+    pwm_control.enablePort(backCenterServo); //p2.3
 
-    heightScalar = 1;
+    heightScalar = .5;
     currentHeightTarget = HOVER_HEIGHT_TARGET;
 
     //These values will be kept until the time reaches MIN_SEC
@@ -39,6 +39,8 @@ bool MotorControlTask::init()
 bool MotorControlTask::run(void* p)
 {
     tickCount++;
+   // if (currentHeightTarget <= HOVER_HEIGHT_TARGET)
+   //     currentHeightTarget += HEIGHT_TARGET_INCREASE;
     getOrientationFromQueue();
 
     if ( !(paused = isNotReady() ) && !killed) //CANNOT enter this block if we've
@@ -59,7 +61,7 @@ bool MotorControlTask::run(void* p)
 
     if (killed)
     {
-        printf("Killed, failsafe violation\n");
+       // printf("Killed, failsafe violation\n");
     }
 
     return true;
@@ -103,24 +105,27 @@ void MotorControlTask::updateMotorServoControl()
     //Yaw control
     //  Increase or decrease servo
     //  axis z: counterclockwise positive, clockwise negative
-    if (orientation.z > ZERO_Z) //yaw counter clockwisew => increase servo
+    if (orientation.z > ZERO_Z) //yaw counter clockwisew => decrase servo
     {
-        servoCorrection = SENSITIVITY_Z * pow(fabs(orientation.z - ZERO_Z), CORRECTION_DEGREE);
+        //note the negative
+        servoCorrection = -(SENSITIVITY_Z * pow(fabs(orientation.z - ZERO_Z), CORRECTION_DEGREE));
     }
-    else //yaw clockwisew => decrease servo
+    else //yaw clockwise => increase servo
     {
         servoCorrection = SENSITIVITY_Z * pow(fabs(orientation.z - ZERO_Z), CORRECTION_DEGREE);
     }
 
    //Height control
-   //  scale all percents by whether we are too low/high
+   //  scale all percents by whether we are too low/high and too slow/fast
    if (orientation.height < currentHeightTarget)
    {
-       heightScalar += SENSITIVITY_HEIGHT;
+      // heightScalar = 1 + SENSITIVITY_HEIGHT * fabs(orientation.height - currentHeightTarget);
+      heightScalar += SENSITIVITY_HEIGHT;
    }
    else if (orientation.height > currentHeightTarget)
    {
-       heightScalar -= SENSITIVITY_HEIGHT;
+      // heightScalar = 1 - SENSITIVITY_HEIGHT * fabs(orientation.height - currentHeightTarget);
+      heightScalar -= SENSITIVITY_HEIGHT;
    }
 
    //Now set the motor percents with the corrections and height scaling applied
@@ -136,9 +141,11 @@ void MotorControlTask::updateMotorServoControl()
 
    //Servo doesn't get height scaling
    pwm_control.setPercent(backCenterServo, inRangeServo(SERVO_PERCENT + servoCorrection));
+   //printf("Servo percent: %f", inRangeServo(SERVO_PERCENT + servoCorrection));
 
    //Debug output, delete me
    /*printf("x: %f, y %f, z %f \n", orientation.x, orientation.y, orientation.z);
+     printf("height: %f", orientation.height);
      printf("Front right motor: %f\n", std::min(PERCENT_MAX, frontRightMotorPercent * heightScalar));
      printf("Front left motor: %f\n", std::min(PERCENT_MAX, frontLeftMotorPercent * heightScalar));
      printf("Back center motor: %f\n", std::min(PERCENT_MAX, backCenterMotorPercent * heightScalar));

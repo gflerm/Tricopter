@@ -35,6 +35,11 @@ typedef struct{
         float y;
         float z;
         float height;
+        float gyro_x;
+        float gyro_y;
+        float gyro_z;
+        float height_velocity_usen;
+        float height_velocity_asen;
 } orientation_t;
 
 class Accelerometer : protected I2C_Device_Base, public SingletonTemplate<Accelerometer>

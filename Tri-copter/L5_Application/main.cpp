@@ -91,13 +91,14 @@ void debugTask(void* p)
     OrientationTask* orientation = (OrientationTask*)p;
     while (true)
     {
+        orientation_t orientation_data = (*orientation->get_orientation());
         printf("-------------------------------\n");
         printf("Acceleration x: %f, y: %f, z: %f\n", orientation->get_raw_accel().x.word * 4.0 / 1000.0,  orientation->get_raw_accel().y.word * 4.0 / 1000.0,  orientation->get_raw_accel().z.word * 4.0 / 1000.0);
         printf("Gyro x: %d, y: %d, z: %d\n", orientation->get_raw_gyro().x.word,  orientation->get_raw_gyro().y.word,  orientation->get_raw_gyro().z.word);
-        printf("Orientation x: %f\n", orientation->get_orientation()->x);
-        printf("Orientation y: %f\n", orientation->get_orientation()->y);
-        printf("Orientation z: %f\n", orientation->get_orientation()->z);
-        printf("Height: %f\n", orientation->get_orientation()->height);
+        printf("Orientation x: %f\n", orientation_data.x);
+        printf("Orientation y: %f\n", orientation_data.y);
+        printf("Orientation z: %f\n", orientation_data.z);
+        printf("Height: %f\n", orientation_data.height);
         vTaskDelay(500);
     }
 }
@@ -110,7 +111,7 @@ TaskHandle_t debugtask;
 TaskHandle_t debugmotortask;
 int main(void)
 {
- /*   PWMController &pwm = PWMController::getInstance();
+    /*PWMController &pwm = PWMController::getInstance();
     pwm.init(); //just in case, not really necessary
     pwm.enablePort(PWMController::pwm1);
     pwm.enablePort(PWMController::pwm2);

@@ -40,8 +40,15 @@ bool OrientationTask::init()
     orientation.y = 0;
     orientation.z = 0;
     orientation.height = 0;
+    orientation.height_velocity_usen = 0;
+    orientation.height_velocity_asen = 0;
 
     orientation_queue = xQueueCreate(1, (sizeof(orientation_t)));
+
+    for (int i = 0; i < NUM_HEIGHT_READINGS; i++)
+    {
+        prevHeights[i] = APPROX_INIT_HEIGHT;
+    }
 
     //Height Sensor
     LPC_SC->PCONP |= (1<<23); // enable hardware timer 3
@@ -52,7 +59,7 @@ bool OrientationTask::init()
     LPC_GPIO1->FIODIR |= (1<<19); //SET PIN 1.19 to output
     eint3_enable_port0(DIST_PIN, eint_rising_edge, *distance_sensor);
 
-    lastHeight = APPROX_INIT_HEIGHT;
+    //lastHeight = APPROX_INIT_HEIGHT;
 
     accel_sensor = &(Accelerometer::getInstance());
     gyro_sensor = &(Gyroscope::getInstance());
@@ -87,17 +94,41 @@ bool OrientationTask::run(void* p)
     accel_data = accel_sensor->getXYZ();
     gyro_data = gyro_sensor->getXYZ();
 
+    orientation.gyro_x = toRadians(gyro_data.x.word);
+    orientation.gyro_y = toRadians(gyro_data.y.word);
+    orientation.gyro_z = toRadians(gyro_data.z.word);
+
     //Integrate gyroscope data
-    orientation.x += toRadians((gyro_data.x.word)) * secondsSinceLastUpdate;
-    orientation.y += toRadians((gyro_data.y.word)) * secondsSinceLastUpdate;
-    if (std::abs(gyro_data.z.word) > GYRO_NOISE_FLOOR)
-        orientation.z += toRadians((gyro_data.z.word)) * secondsSinceLastUpdate;
+    orientation.x += orientation.gyro_x * secondsSinceLastUpdate;
+    orientation.y += orientation.gyro_z * secondsSinceLastUpdate;
+    if (gyro_data.z.word > GYRO_NOISE_FLOOR)
+        orientation.z += orientation.gyro_z * secondsSinceLastUpdate;
 
     //Calculate height in inches
     //orientation.height =(.120*total)/148; // should be .208 but .120 provides better result
+
     float read_height = (.120 * total) / 148;
+
     if (isValidUltrasonicReading(read_height))
+    {
+        //collect height history
+        for (int i = NUM_HEIGHT_READINGS-1; i > 0; i--)
+        {
+            prevHeights[i] = prevHeights[i-1];
+        }
+        prevHeights[0] = read_height;
+
+        float diffHeights = 0;
+        for (int i = 0; i < NUM_HEIGHT_READINGS - 1; i++)
+        {
+            diffHeights += prevHeights[i] - prevHeights[i+1];
+        }
+        orientation.height_velocity_usen = (1000.0f * diffHeights) / (NUM_HEIGHT_READINGS * ORIENTATION_UPDATE_TIME);
+
+        //calculate derivative of height position to find the velocity
+        //orientation.height_velocity = (1000 * (read_height - orientation.height)) / (ORIENTATION_UPDATE_TIME);
         orientation.height = read_height;
+    }
 
     //~~~~~~~~~~NOTE: ACCELEROMETER AXES ARE OPPOSITE OF GYROSCOPE~~~~~~~~~~~~
     //Find the angle in radians from the acceleration data
@@ -110,9 +141,9 @@ bool OrientationTask::run(void* p)
    // {
         //Complementary filter
         //High pass filter the gyro data, low pass filter the acceleration data
-        orientation.x = (FILTER_PERCENT_HIGH * (orientation.x + toRadians(gyro_data.x.word) * secondsSinceLastUpdate)) +
+        orientation.x = (FILTER_PERCENT_HIGH * (orientation.x + orientation.gyro_x * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW  * accel_calc.x);
-        orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + toRadians(gyro_data.y.word) * secondsSinceLastUpdate)) +
+        orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + orientation.gyro_y * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW * accel_calc.y);
    // }
 

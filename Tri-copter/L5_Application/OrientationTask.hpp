@@ -78,9 +78,10 @@ private:
      uint16_t accel_magnitude;
 
      //Use this to filter out garbage from ultrasonic sensor data readings
-     float lastHeight;
+     static const int NUM_HEIGHT_READINGS = 5;
+     float prevHeights[NUM_HEIGHT_READINGS];
      static const float APPROX_INIT_HEIGHT = 2; //lastHeight will be initialized to this value
-     static const float HEIGHT_CHANGE_THRESHOLD = 3; //inches
+     static const float HEIGHT_CHANGE_THRESHOLD = 5; //inches
 
      //Task control settings
      static const int STACK_SIZE_BYTES = 4096;
@@ -91,7 +92,7 @@ private:
      static const float FILTER_PERCENT_LOW = .02;
 
      //Gyro noise filter
-     static const float GYRO_NOISE_FLOOR = 250;
+     static const float GYRO_NOISE_FLOOR = 125;
 
      //These should be set depending upon the output range of the accelerometer
      //i.e., if the output range is 10 bits and the g-range is +-2g then a reasonable
@@ -125,15 +126,11 @@ private:
 
      bool isValidUltrasonicReading(float height)
      {
-         if (fabs(height - lastHeight) < HEIGHT_CHANGE_THRESHOLD)
+         if (fabs(height - orientation.height) < HEIGHT_CHANGE_THRESHOLD)
          {
-             lastHeight = height;
              return true;
          }
-         else
-         {
-             return false;
-         }
+         return false;
      }
 };
 
