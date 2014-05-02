@@ -35,6 +35,8 @@ typedef struct{
         float y;
         float z;
         float height;
+        float gx, gy, gz;
+        float ax, ay, az;
 } orientation_t;
 
 class Accelerometer : protected I2C_Device_Base, public SingletonTemplate<Accelerometer>

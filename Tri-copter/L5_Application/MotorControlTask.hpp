@@ -94,12 +94,13 @@ private:
     //Increases/decreases all motor speeds based on height
     float heightScalar;
     float currentHeightTarget;
+    float baseMotorPower;
 
     //Task control settings
     static const int STACK_SIZE_BYTES = 4096;
 
     //How often the motor control task should run
-    static const int MOTOR_CONTROL_UPDATE = 200; //ms, we can update the motor control at most 50 times/sec
+    static const int MOTOR_CONTROL_UPDATE = 250; //ms, we can update the motor control at most 50 times/sec
 
     //For timer purposes, so we can kill the power after a certain time
     const static int MAX_SEC = 45;
@@ -128,7 +129,7 @@ private:
     static const float SENSITIVITY_X = 1; //scalar for how fast the motors should spin up
     static const float SENSITIVITY_Y = 1;
     static const float SENSITIVITY_Z = 1; //servo
-    static const float SENSITIVITY_HEIGHT = .005; //percent
+    static const float SENSITIVITY_HEIGHT = 1; //percent
     static const float CORRECTION_DEGREE = 2; //1 = linear, 2 = quadratic, etc
 
     //Targets for hovering

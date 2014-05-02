@@ -87,6 +87,14 @@ bool OrientationTask::run(void* p)
     accel_data = accel_sensor->getXYZ();
     gyro_data = gyro_sensor->getXYZ();
 
+    orientation.gx = gyro_data.x.word;
+    orientation.gy = gyro_data.y.word;
+    orientation.gz = gyro_data.z.word;
+
+    orientation.ax = (accel_data.x.word << 4);
+    orientation.ay = (accel_data.y.word << 4);
+    orientation.az = (accel_data.z.word << 4);
+
     //Integrate gyroscope data
     orientation.x += toRadians((gyro_data.x.word)) * secondsSinceLastUpdate;
     orientation.y += toRadians((gyro_data.y.word)) * secondsSinceLastUpdate;
