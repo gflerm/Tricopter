@@ -10,18 +10,19 @@
 #include <cmath> //abs
 #include <cstdio> //debug
 
+//Shane is retarded
 #define _toRadians(deg) (deg*M_PI/180.0f)
 
-float timeToResolve(float orientation, float target)
+float MotorControlTask::timeToResolve(float orientation, float target)
 {
     //given our orientation and target orientation in radians,
     //How long should we take to resolve the problem?
     //Worst case (10 degrees) 0.5 seconds, best (0.00000... degrees) 0.05 seconds
 
-    return 0.15f; //TODO
+    return .1f / pow(fabs(orientation-target) + .13,CORRECTION_DEGREE);
 }
 
-float getSign(float value)
+float MotorControlTask::getSign(float value)
 {
     return value > 0 ? 1.0f : -1.0f;
 }
@@ -76,46 +77,46 @@ bool MotorControlTask::run(void* p)
 
     if (killed)
     {
-        printf("Killed, failsafe violation\n");
+        //printf("Killed, failsafe violation\n");
     }
 
     return true;
 }
 
+float target_roll = 0;
+float target_pitch = 0;
+float target_yaw = 0;
+
+//These apply a correction to base motor/servo percentage based on orientation
+float frontLeftCorrection = 0;
+float frontRightCorrection = 0;
+float backCenterCorrection = 0;
+float servoCorrection = 0;
+
 void MotorControlTask::updateMotorServoControl()
 {
     PWMController &pwm_control = PWMController::getInstance();
-
-    //These apply a correction to base motor/servo percentage based on orientation
-    float frontLeftCorrection = 0;
-    float frontRightCorrection = 0;
-    float backCenterCorrection = 0;
-    float servoCorrection = 0;
 
     //millidegrees per second to radians per second
     float actual_roll = _toRadians(orientation.gx) / 1000.0f;
     float actual_pitch = _toRadians(orientation.gy) / 1000.0f;
     float actual_yaw = _toRadians(orientation.gz)/ 1000.0f;
 
-    float target_roll = 0;
-    float target_pitch = 0;
-    float target_yaw = 0;
-
     //  axis x: right positive, left negative
     //  axis y: up positive, down negative,
     //  axis z: counterclockwise positive, clockwise negative
-    target_roll = getSign(ZERO_X - orientation.x) * fabs(orientation.x) / timeToResolve(orientation.x,ZERO_X);
-    target_pitch = getSign(ZERO_Y - orientation.y) * fabs(orientation.y) / timeToResolve(orientation.y,ZERO_Y);
-    target_yaw = getSign(ZERO_Z - orientation.z) * fabs(orientation.z) / timeToResolve(orientation.z,ZERO_Z);
+    target_roll = getSign(ZERO_X - orientation.x) * fabs(orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
+    target_pitch = getSign(orientation.y - ZERO_Y) * fabs(orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
+    target_yaw = getSign(ZERO_Z - orientation.z) * fabs(orientation.z - ZERO_Z) / timeToResolve(orientation.z,ZERO_Z);
 
    //Height control
    //  scale all percents by whether we are too low/high
    baseMotorPower += SENSITIVITY_HEIGHT * getSign(currentHeightTarget - orientation.height);
 
    //Determine amount to decrease motors
-   frontLeftCorrection = SENSITIVITY_X * (target_roll - actual_roll);
-   frontRightCorrection = SENSITIVITY_X * (actual_roll - target_roll);
-   backCenterCorrection = SENSITIVITY_Y * (target_pitch - actual_pitch);
+   frontLeftCorrection += SENSITIVITY_X * (actual_roll - target_roll);
+   frontRightCorrection += SENSITIVITY_X * (target_roll - actual_roll);
+   backCenterCorrection += SENSITIVITY_Y * (actual_pitch - target_pitch);
    servoCorrection = SENSITIVITY_Z * (target_yaw - actual_yaw);
 
 
@@ -124,7 +125,7 @@ void MotorControlTask::updateMotorServoControl()
                           inRangeMotor( baseMotorPower + frontRightCorrection)
                           );
    pwm_control.setPercent(frontLeftMotor,
-                          inRangeMotor( baseMotorPower + frontLeftCorrection)
+                          inRangeMotor( baseMotorPower + frontLeftCorrection -10)
                           );
    pwm_control.setPercent(backCenterMotor,
                           inRangeMotor( baseMotorPower + backCenterCorrection)
@@ -134,7 +135,7 @@ void MotorControlTask::updateMotorServoControl()
    pwm_control.setPercent(backCenterServo, inRangeServo(SERVO_PERCENT + servoCorrection));
 
    //Debug output, delete me
-   printf("x: %f, y %f, z %f \n", orientation.x, orientation.y, orientation.z);
+  /* printf("x: %f, y %f, z %f \n", orientation.x, orientation.y, orientation.z);
    printf("ar: %f, ap %f, ay %f \n", actual_roll, actual_pitch, actual_yaw);
    printf("tr: %f, tp %f, ty %f \n", target_roll, target_pitch, target_yaw);
    printf("Height scalar %n", heightScalar);
@@ -142,17 +143,24 @@ void MotorControlTask::updateMotorServoControl()
    printf("Front left motor: %f\n", frontLeftCorrection);
    printf("Back center motor: %f\n", backCenterCorrection);
    printf("Back center servo: %f \n", servoCorrection);
-   printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+   printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"); */
 }
 
 bool MotorControlTask::violatesFailSafe()
 {
-    if (std::abs(orientation.x) > MAX_X_ANGLE)
+    if (std::abs(orientation.x) > MAX_X_ANGLE) {
+        printf("Killed due to orientation.x of %f \n", orientation.x);
+        printf("Accel x: %f \n", orientation.ax);
         return true;
-    if (std::abs(orientation.y) > MAX_Y_ANGLE)
+    }
+    if (std::abs(orientation.y) > MAX_Y_ANGLE) {
+        printf("Killed due to orientation.y of %f \n", orientation.y);
         return true;
-    if (orientation.height > MAX_HEIGHT)
+    }
+    if (orientation.height > MAX_HEIGHT) {
+        printf("Killed due to height of %f", orientation.height);
         return true;
+    }
 
     return false;
 }

@@ -114,15 +114,15 @@ bool OrientationTask::run(void* p)
 
     //If we can trust the accelerometer data, then add it in
     accel_magnitude = std::abs(accel_data.x.word) + std::abs(accel_data.y.word) + std::abs(accel_data.z.word);
-   // if ( accel_magnitude > ACCEL_MAGNITUDE_LOW && accel_magnitude < ACCEL_MAGNITUDE_HIGH)
-   // {
+   if ( accel_magnitude > ACCEL_MAGNITUDE_LOW && accel_magnitude < ACCEL_MAGNITUDE_HIGH)
+   {
         //Complementary filter
         //High pass filter the gyro data, low pass filter the acceleration data
         orientation.x = (FILTER_PERCENT_HIGH * (orientation.x + toRadians(gyro_data.x.word) * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW  * accel_calc.x);
         orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + toRadians(gyro_data.y.word) * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW * accel_calc.y);
-   // }
+   }
 
     //Place calculated orientation in queue for motor control to receive, if there's space
     //If there's not, we don't care and we don't wait

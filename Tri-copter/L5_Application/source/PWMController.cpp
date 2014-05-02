@@ -52,7 +52,7 @@ bool PWMController::enablePort(pwmType port)
     if (port >= pwm1 && port <= pwm6)
     {
         //enable the port
-        enableMask |= 1 << 1+port;
+        enableMask |= 1 << (1+port);
 
         // Pinsel the PWM
         LPC_PINCON->PINSEL4 &= ~(3 << (port*2));

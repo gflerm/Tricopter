@@ -86,6 +86,10 @@ void debug_trigger(void *)
 */
 //static TaskHandle_t calibration;
 
+extern float target_roll;
+extern float target_pitch;
+extern float target_yaw;
+
 void debugTask(void* p)
 {
     OrientationTask* orientation = (OrientationTask*)p;
@@ -98,6 +102,12 @@ void debugTask(void* p)
         printf("Orientation y: %f\n", orientation->get_orientation()->y);
         printf("Orientation z: %f\n", orientation->get_orientation()->z);
         printf("Height: %f\n", orientation->get_orientation()->height);
+        printf("Target roll: %f\n", target_roll);
+        printf("Target pitch: %f\n", target_pitch);
+        printf("Target yaw: %f\n", target_yaw);
+        printf("Correction left motor: %f \n", frontLeftCorrection);
+        printf("Correction right motor: %f \n", frontRightCorrection);
+        printf("Correction back motor: %f \n", backCenterCorrection);
         vTaskDelay(500);
     }
 }
@@ -141,7 +151,7 @@ int main(void)
     //xTaskCreate(debug_trigger, "trig", 256, 0,PRIORITY_HIGH, &debugHandle);
 
 	//vTaskStartScheduler();
-    //xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_MEDIUM, &debugtask);
+    xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_MEDIUM, &debugtask);
     //xTaskCreate(debugMotorTask, "debugmotortask", 4096, ((void*)control), PRIORITY_MEDIUM, &debugmotortask);
     scheduler_start(true);
 
