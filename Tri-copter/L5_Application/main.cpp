@@ -142,7 +142,7 @@ int main(void)
     //xTaskCreate(debug_trigger, "trig", 256, 0,PRIORITY_HIGH, &debugHandle);
 
 	//vTaskStartScheduler();
-    //xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_MEDIUM, &debugtask);
+    xTaskCreate(debugTask, "debugtask", 4096, ((void*)orientation), PRIORITY_MEDIUM, &debugtask);
     //xTaskCreate(debugMotorTask, "debugmotortask", 4096, ((void*)control), PRIORITY_MEDIUM, &debugmotortask);
     scheduler_start(true);
 

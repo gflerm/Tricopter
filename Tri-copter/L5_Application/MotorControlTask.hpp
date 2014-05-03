@@ -92,11 +92,12 @@ private:
     int tickCount;
 
     //Increases/decreases all motor speeds based on height
-    float heightScalar;
     float currentHeightTarget;
     float heightPrevious;
 
     //Accumulative values
+    //These are the integral "I" values of the PI controller in updateMotorServoControl()
+    float heightScalarAccum;
     float frontRightAccum;
     float frontLeftAccum;
     float backCenterAccum;
@@ -106,15 +107,14 @@ private:
     static const int STACK_SIZE_BYTES = 4096;
 
     //How often the motor control task should run
-    static const int MOTOR_CONTROL_UPDATE = 500; //ms, we can update the motor control at most 50 times/sec
+    static const int MOTOR_CONTROL_UPDATE = 20; //ms, we can update the motor control at most 50 times/sec
 
     //For timer purposes, so we can kill the power after a certain time
     const static int MAX_SEC = 75;
     const static int MIN_SEC = 5;
 
-    //Maximum orientation angles before we kill the motors
-    static const float MAX_X_ANGLE = .200; //20 degrees on x and y, don't really care about z
-    static const float MAX_Y_ANGLE = .200;
+    //Maximum orientation values before we kill the motors
+    static const float MAX_ANGLE = .200; //radians
     static const float MAX_HEIGHT = 24; //inches
 
     //PWM port assignments
@@ -125,14 +125,18 @@ private:
 
     //~~~~~~~~~~~~~~~~~ CALIBRATION SETTINGS ~~~~~~~~~~~~~~~~~~~~~~~~~
     //PI gains
-    static const float PRESENT_GAIN = 1.00;
-    static const float ACCUM_GAIN = 0;
+    static const float PRESENT_GAIN = .80;
+    static const float ACCUM_GAIN = .20;
 
     //Threshold to start accumulation
-    static const float ACCUM_THRESHOLD = .075;
+    static const float ACCUM_MOTOR_THRESHOLD = .075;
+    static const float ACCUM_SERVO_THRESHOLD = .075;
+    static const float ACCUM_HEIGHT_THRESHOLD = 2;
 
-    //Accumulation rate
-    static const float ACCUM_RATE = 25;
+    //Accumulation strength control
+    static const float ACCUM_SCALAR_MOTOR = 25;
+    static const float ACCUM_SCALAR_SERVO = 25;
+    static const float ACCUM_SCALAR_HEIGHT = 1;
 
     //These are base percentages that should be set to values which cause the tricopter to
     //almost hover in a somewhat stable position
@@ -140,13 +144,16 @@ private:
     static const float FRONT_RIGHT_PERCENT = 49;
     static const float BACK_CENTER_PERCENT = 55.5;
     static const float SERVO_PERCENT = 41;
+    static const float HEIGHT_SCALAR = 1;
 
     //Sensitivity settings
     static const float SENSITIVITY_X = 50; //scalar for how fast the motors should spin up
     static const float SENSITIVITY_Y = 50;
     static const float SENSITIVITY_Z = 250; //servo
     static const float SENSITIVITY_HEIGHT = .05; //percent * 100
-    static const float CORRECTION_DEGREE = 1; //1 = linear, 2 = quadratic, etc
+    static const float CORRECTION_MOTOR_DEGREE = 1; //1 = linear, 2 = quadratic, etc
+    static const float CORRECTION_SERVO_DEGREE = 1;
+    static const float CORRECTION_HEIGHT_DEGREE = 1;
 
     //Targets for hovering
     static const float ZERO_X = .044; //radians

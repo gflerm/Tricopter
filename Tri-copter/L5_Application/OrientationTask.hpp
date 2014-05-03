@@ -71,15 +71,7 @@ private:
      Accelerometer* accel_sensor;
      Gyroscope* gyro_sensor;
 
-     three_axis_info_t accel_data;
-     three_axis_info_t gyro_data;
-     orientation_t accel_calc;
-
-     uint16_t accel_magnitude;
-
      //Use this to filter out garbage from ultrasonic sensor data readings
-     static const int NUM_HEIGHT_READINGS = 5;
-     float prevHeights[NUM_HEIGHT_READINGS];
      static const float APPROX_INIT_HEIGHT = 2; //lastHeight will be initialized to this value
      static const float HEIGHT_CHANGE_THRESHOLD = 5; //inches
 
@@ -94,11 +86,10 @@ private:
      //Gyro noise filter
      static const float GYRO_NOISE_FLOOR = 125;
 
-     //These should be set depending upon the output range of the accelerometer
-     //i.e., if the output range is 10 bits and the g-range is +-2g then a reasonable
-     //value would be between ~640 (.5g on only one axis) to ~2304 (3g over all axes)
-     static const uint16_t ACCEL_MAGNITUDE_LOW = 640;
-     static const uint16_t ACCEL_MAGNITUDE_HIGH = 2304;
+     //These should be set to filter out any accelerometer weirdness
+     //Add all axes together to find the total magnitude
+     static const uint16_t ACCEL_MAGNITUDE_LOW = 256;
+     static const uint16_t ACCEL_MAGNITUDE_HIGH = 4096;
 
      //constants
      static const float GRAVITY_ACCEL = 9.81;
@@ -124,9 +115,9 @@ private:
          return milliseconds / 1000.0;
      }
 
-     bool isValidUltrasonicReading(float height)
+     bool isValidUltrasonicReading(float currentHeight, float previousHeight)
      {
-         if (fabs(height - orientation.height) < HEIGHT_CHANGE_THRESHOLD)
+         if (fabs(currentHeight - previousHeight) < HEIGHT_CHANGE_THRESHOLD)
          {
              return true;
          }

@@ -45,11 +45,6 @@ bool OrientationTask::init()
 
     orientation_queue = xQueueCreate(1, (sizeof(orientation_t)));
 
-    for (int i = 0; i < NUM_HEIGHT_READINGS; i++)
-    {
-        prevHeights[i] = APPROX_INIT_HEIGHT;
-    }
-
     //Height Sensor
     LPC_SC->PCONP |= (1<<23); // enable hardware timer 3
     LPC_SC->PCLKSEL1 &=(1<<14); // USE CCLK
@@ -82,7 +77,6 @@ float OrientationTask::get_height()
 
 bool OrientationTask::run(void* p)
 {
-   // printf("o\n");
     float secondsSinceLastUpdate = toSeconds(ORIENTATION_UPDATE_TIME);
 
     //Grab height info from Ultra sonic sensor (needs around 500us after going low)
@@ -91,8 +85,8 @@ bool OrientationTask::run(void* p)
     LPC_GPIO1->FIOCLR |= (1<<19); // set low
 
     //Grab info from accelerometer and gyroscope
-    accel_data = accel_sensor->getXYZ();
-    gyro_data = gyro_sensor->getXYZ();
+    three_axis_info_t accel_data = accel_sensor->getXYZ();
+    three_axis_info_t gyro_data = gyro_sensor->getXYZ();
 
     orientation.gyro_x = toRadians(gyro_data.x.word);
     orientation.gyro_y = toRadians(gyro_data.y.word);
@@ -108,44 +102,28 @@ bool OrientationTask::run(void* p)
     //orientation.height =(.120*total)/148; // should be .208 but .120 provides better result
 
     float read_height = (.120 * total) / 148;
-
-    if (isValidUltrasonicReading(read_height))
+    if (isValidUltrasonicReading(read_height, orientation.height))
     {
-        //collect height history
-        for (int i = NUM_HEIGHT_READINGS-1; i > 0; i--)
-        {
-            prevHeights[i] = prevHeights[i-1];
-        }
-        prevHeights[0] = read_height;
-
-        float diffHeights = 0;
-        for (int i = 0; i < NUM_HEIGHT_READINGS - 1; i++)
-        {
-            diffHeights += prevHeights[i] - prevHeights[i+1];
-        }
-        orientation.height_velocity_usen = (1000.0f * diffHeights) / (NUM_HEIGHT_READINGS * ORIENTATION_UPDATE_TIME);
-
-        //calculate derivative of height position to find the velocity
-        //orientation.height_velocity = (1000 * (read_height - orientation.height)) / (ORIENTATION_UPDATE_TIME);
         orientation.height = read_height;
     }
 
     //~~~~~~~~~~NOTE: ACCELEROMETER AXES ARE OPPOSITE OF GYROSCOPE~~~~~~~~~~~~
     //Find the angle in radians from the acceleration data
+    orientation_t accel_calc;
     accel_calc.x = atan2(accel_data.y.word, accel_data.z.word);
     accel_calc.y = atan2(accel_data.x.word, accel_data.z.word);
 
     //If we can trust the accelerometer data, then add it in
-    accel_magnitude = std::abs(accel_data.x.word) + std::abs(accel_data.y.word) + std::abs(accel_data.z.word);
-   // if ( accel_magnitude > ACCEL_MAGNITUDE_LOW && accel_magnitude < ACCEL_MAGNITUDE_HIGH)
-   // {
+    uint16_t accel_magnitude = std::abs(accel_data.x.word) + std::abs(accel_data.y.word) + std::abs(accel_data.z.word);
+    if ( accel_magnitude > ACCEL_MAGNITUDE_LOW && accel_magnitude < ACCEL_MAGNITUDE_HIGH)
+    {
         //Complementary filter
         //High pass filter the gyro data, low pass filter the acceleration data
         orientation.x = (FILTER_PERCENT_HIGH * (orientation.x + orientation.gyro_x * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW  * accel_calc.x);
         orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + orientation.gyro_y * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW * accel_calc.y);
-   // }
+    }
 
     //Place calculated orientation in queue for motor control to receive, if there's space
     //If there's not, we don't care and we don't wait

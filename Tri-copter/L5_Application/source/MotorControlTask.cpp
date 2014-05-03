@@ -23,13 +23,13 @@ bool MotorControlTask::init()
     frontLeftAccum = 0;
     backCenterAccum = 0;
     servoAccum = 0;
+    heightScalarAccum = 0;
 
     pwm_control.enablePort(frontLeftMotor);  //p2.0
     pwm_control.enablePort(frontRightMotor); //p2.1
     pwm_control.enablePort(backCenterMotor); //p2.2
     pwm_control.enablePort(backCenterServo); //p2.3
 
-    heightScalar = 1;
     currentHeightTarget = HOVER_HEIGHT_TARGET;
 
     //These values will be kept until the time reaches MIN_SEC
@@ -44,8 +44,6 @@ bool MotorControlTask::init()
 bool MotorControlTask::run(void* p)
 {
     tickCount++;
-   // if (currentHeightTarget <= HOVER_HEIGHT_TARGET)
-   //     currentHeightTarget += HEIGHT_TARGET_INCREASE;
     getOrientationFromQueue();
 
     if ( !(paused = isNotReady() ) && !killed) //CANNOT enter this block if we've
@@ -63,18 +61,13 @@ bool MotorControlTask::run(void* p)
             killMotors();
         }
     }
-
-    if (killed)
-    {
-        printf("Killed, failsafe violation\n");
-    }
-
     return true;
 }
 
-
 void MotorControlTask::updateMotorServoControl()
 {
+    //Implements a PI controller
+    // > en.wikipedia.org/PID_Controller
     PWMController &pwm_control = PWMController::getInstance();
 
     //These apply a correction to base motor/servo percentage based on orientation
@@ -82,117 +75,151 @@ void MotorControlTask::updateMotorServoControl()
     float frontRightCorrection = 0;
     float backCenterCorrection = 0;
     float servoCorrection = 0;
+    float heightScalarCorrection = 0;
 
-    float frontLeftPresent = FRONT_LEFT_PERCENT;
-    float frontRightPresent = FRONT_RIGHT_PERCENT;
-    float backCenterPresent = BACK_CENTER_PERCENT;
-    float servoPresent = SERVO_PERCENT;
+    //These are the proportional "P" part of the PI controller
+    float frontLeftPresent = 0;
+    float frontRightPresent = 0;
+    float backCenterPresent = 0;
+    float servoPresent = 0;
+    float heightScalarPresent = 0;
 
     //Roll control
     //  Adjust the speed of either front motor
     //  axis x: right negative, left positive
     float xErr = orientation.x - ZERO_X;
+    float xErrAbs = fabs(xErr);
     if (xErr < 0) //roll right => increase right motor
     {
-        if (fabs(xErr) > ACCUM_THRESHOLD)
+        if (xErrAbs > ACCUM_MOTOR_THRESHOLD)
         {
-            frontRightAccum += ACCUM_RATE * fabs(xErr);
-            frontLeftAccum -= ACCUM_RATE * fabs(xErr);
+            frontRightAccum += ACCUM_SCALAR_MOTOR * xErrAbs;
+            frontLeftAccum -= ACCUM_SCALAR_MOTOR * xErrAbs;
         }
-        //Apply the correction to the base percent
-        frontRightPresent += SENSITIVITY_X * pow(fabs(orientation.x - ZERO_X) , CORRECTION_DEGREE);
+        frontRightPresent = SENSITIVITY_X * pow(xErrAbs , CORRECTION_MOTOR_DEGREE);
     }
     else //roll left => increase left motor
     {
-        if (fabs(xErr > ACCUM_THRESHOLD))
+        if (fabs(xErr) > ACCUM_MOTOR_THRESHOLD)
         {
-            frontLeftAccum += ACCUM_RATE * fabs(xErr);
-            frontRightAccum -= ACCUM_RATE * fabs(xErr);
+            frontLeftAccum += ACCUM_SCALAR_MOTOR * xErrAbs;
+            frontRightAccum -= ACCUM_SCALAR_MOTOR * xErrAbs;
         }
-        //Apply the correction to the base percent
-        frontLeftPresent += SENSITIVITY_X * pow(fabs(orientation.x - ZERO_X), CORRECTION_DEGREE);
+        frontLeftPresent = SENSITIVITY_X * pow(xErrAbs, CORRECTION_MOTOR_DEGREE);
     }
 
     //Pitch control
     //  Increase/decrease speed of back motor
     //  axis y: up negative, down positive
     float yErr = orientation.y - ZERO_Y;
+    float yErrAbs = fabs(yErr);
     if (yErr < 0) //pitch up => decrease back motor
     {
-        if (fabs(yErr) > ACCUM_THRESHOLD)
+        if (fabs(yErr) > ACCUM_MOTOR_THRESHOLD)
         {
-            backCenterAccum -= ACCUM_RATE * fabs(yErr);
+            backCenterAccum -= ACCUM_SCALAR_MOTOR * yErrAbs;
         }
-        //Apply the correction to the base precent. note the negative
-        backCenterPresent += -(SENSITIVITY_Y * pow(fabs(orientation.y - ZERO_Y), CORRECTION_DEGREE));
+        //note the negative
+        backCenterPresent = -(SENSITIVITY_Y * pow(yErrAbs, CORRECTION_MOTOR_DEGREE));
     }
     else //pitch down => increase back motor
     {
-        if (fabs(yErr) > ACCUM_THRESHOLD)
+        if (fabs(yErr) > ACCUM_MOTOR_THRESHOLD)
         {
-            backCenterAccum += ACCUM_RATE * fabs(yErr);
+            backCenterAccum += ACCUM_SCALAR_MOTOR * yErrAbs;
         }
-        backCenterPresent += SENSITIVITY_Y * pow(fabs(orientation.y - ZERO_Y), CORRECTION_DEGREE);
+        backCenterPresent = SENSITIVITY_Y * pow(yErrAbs, CORRECTION_MOTOR_DEGREE);
     }
 
     //Yaw control
     //  Increase or decrease servo
     //  axis z: counterclockwise positive, clockwise negative
-    if (orientation.z > ZERO_Z) //yaw counter clockwisew => decrase servo
+    float zErr = orientation.z - ZERO_Z;
+    float zErrAbs = fabs(zErr);
+    if (zErr > 0) //yaw counter clockwisew => decrase servo
     {
+        if (zErrAbs > ACCUM_SERVO_THRESHOLD)
+        {
+            servoAccum -= ACCUM_SCALAR_SERVO * zErrAbs;
+        }
         //note the negative
-        //Add the correction to the base percent
-        servoPresent += -(SENSITIVITY_Z * pow(fabs(orientation.z - ZERO_Z), CORRECTION_DEGREE));
+        servoPresent = -(SENSITIVITY_Z * pow(zErrAbs, CORRECTION_SERVO_DEGREE));
     }
     else //yaw clockwise => increase servo
     {
-        //Add the correction to the base percent
-        servoPresent += SENSITIVITY_Z * pow(fabs(orientation.z - ZERO_Z), CORRECTION_DEGREE);
+        if (zErrAbs > ACCUM_SERVO_THRESHOLD)
+        {
+            servoAccum += ACCUM_SCALAR_SERVO * zErrAbs;
+        }
+        servoPresent = SENSITIVITY_Z * pow(zErrAbs, CORRECTION_SERVO_DEGREE);
     }
 
-   //Height control
-   //  scale all percents by whether we are too low/high and too slow/fast
-  /* if (orientation.height < currentHeightTarget)
-   {
-      heightScalar += SENSITIVITY_HEIGHT;
-   }
-   else if (orientation.height > currentHeightTarget)
-   {
-      heightScalar -= SENSITIVITY_HEIGHT;
-   } */
+    //Height control
+    //  scale all percents by whether we are too low/high and too slow/fast
+    float heightErr = orientation.height - currentHeightTarget;
+    float heightErrAbs = fabs(heightErr);
+    if (heightErr < 0) //too low
+    {
+        if (heightErrAbs > ACCUM_HEIGHT_THRESHOLD)
+        {
+            heightScalarAccum += SENSITIVITY_HEIGHT;
+        }
+        heightScalarPresent = -(SENSITIVITY_HEIGHT * pow(heightErrAbs, CORRECTION_HEIGHT_DEGREE));
+    }
+    else  //too high
+    {
+        if (heightErrAbs > ACCUM_HEIGHT_THRESHOLD)
+        {
+            heightScalarAccum -= SENSITIVITY_HEIGHT;
+        }
+        heightScalarPresent = (SENSITIVITY_HEIGHT * pow(heightErrAbs, CORRECTION_HEIGHT_DEGREE));
+    }
 
    frontRightCorrection = (PRESENT_GAIN * frontRightPresent) + (ACCUM_GAIN * frontRightAccum);
    frontLeftCorrection = (PRESENT_GAIN * frontLeftPresent) + (ACCUM_GAIN * frontLeftAccum);
    backCenterCorrection = (PRESENT_GAIN * backCenterPresent) + (ACCUM_GAIN * backCenterAccum);
    servoCorrection = (PRESENT_GAIN * servoPresent) + (ACCUM_GAIN * servoAccum);
+   heightScalarCorrection = (PRESENT_GAIN * heightScalarPresent) + (ACCUM_GAIN * heightScalarAccum);
 
    printf("Front right: %f \n", frontRightCorrection);
    printf("Front left: %f \n", frontLeftCorrection);
    printf("Back center: %f \n", backCenterCorrection);
 
    //Now set the motor percents with the corrections and height scaling applied
-   pwm_control.setPercent(frontRightMotor,
-                          inRangeMotor( frontRightCorrection * heightScalar)
+   pwm_control.setPercent(
+           frontRightMotor,
+           inRangeMotor((FRONT_RIGHT_PERCENT + frontRightCorrection) * (HEIGHT_SCALAR + heightScalarCorrection))
                           );
-   pwm_control.setPercent(frontLeftMotor,
-                          inRangeMotor( frontLeftCorrection * heightScalar)
+   pwm_control.setPercent(
+           frontLeftMotor,
+           inRangeMotor((FRONT_LEFT_PERCENT + frontLeftCorrection) * (HEIGHT_SCALAR + heightScalarCorrection))
                           );
-   pwm_control.setPercent(backCenterMotor,
-                          inRangeMotor( backCenterCorrection * heightScalar)
+   pwm_control.setPercent(
+           backCenterMotor,
+           inRangeMotor( (BACK_CENTER_PERCENT + backCenterCorrection) * (HEIGHT_SCALAR + heightScalarCorrection))
                           );
 
    //Servo doesn't get height scaling
-   pwm_control.setPercent(backCenterServo, inRangeServo( servoCorrection ));
+   pwm_control.setPercent(backCenterServo, inRangeServo( SERVO_PERCENT + servoCorrection ));
 }
 
 bool MotorControlTask::violatesFailSafe()
 {
-    if (std::abs(orientation.x) > MAX_X_ANGLE)
+    if (std::abs(orientation.x) > MAX_ANGLE)
+    {
+        printf("Killed due to orientation.x of %f \n", orientation.x);
         return true;
-    if (std::abs(orientation.y) > MAX_Y_ANGLE)
+    }
+    if (std::abs(orientation.y) > MAX_ANGLE)
+    {
+        printf("Killed due to orientation.y of %f \n", orientation.y);
         return true;
+    }
     if (orientation.height > MAX_HEIGHT)
+    {
+        printf("Killed due to height of %f \n", orientation.height);
         return true;
+    }
 
     return false;
 }
