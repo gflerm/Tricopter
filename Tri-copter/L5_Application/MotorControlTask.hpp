@@ -11,6 +11,7 @@
 #include "scheduler_task.hpp"
 #include "PWMController.hpp"
 #include "10dof.hpp"
+#include "PIDController.hpp"
 
 using namespace _10dof;
 
@@ -44,7 +45,11 @@ public:
     //MotorControlTask()
     //Supplies some default values to the scheduler_task constructor
     MotorControlTask(QueueHandle_t or_queue)
-                   : scheduler_task("motor_control_task", STACK_SIZE_BYTES, PRIORITY_MEDIUM, NULL)
+                   : scheduler_task("motor_control_task", STACK_SIZE_BYTES, PRIORITY_MEDIUM, NULL),
+                     pid_roll(ROLL_KP, ROLL_KI, ROLL_KD),
+                     pid_pitch(PITCH_KP, PITCH_KI, PITCH_KD),
+                     pid_yaw(YAW_KP, YAW_KI, YAW_KD),
+                     pid_height(HEIGHT_KP, HEIGHT_KI, HEIGHT_KD)
     {
         orientation_queue = or_queue;
     };
@@ -58,6 +63,12 @@ public:
     bool run(void* p);
 
 private:
+
+    PIDController pid_roll;
+    PIDController pid_pitch;
+    PIDController pid_yaw;
+    PIDController pid_height;
+
     //checkFailSafe
     //Returns TRUE if fail safe conditions are violated, FALSE otherwise
     bool violatesFailSafe();
@@ -161,6 +172,23 @@ private:
     static const float PERCENT_MIN_MOTOR = 9;
     static const float PERCENT_MAX_SERVO = 100;
     static const float PERCENT_MIN_SERVO = 0;
+
+    //PID controller constants
+    static const float ROLL_KP = 1.0f;
+    static const float ROLL_KI = 2.0f;
+    static const float ROLL_KD = 0.5f;
+    static const float PITCH_KP = 1.0f;
+    static const float PITCH_KI = 2.0f;
+    static const float PITCH_KD = 0.5f;
+    static const float YAW_KP = 1.0f;
+    static const float YAW_KI = 2.0f;
+    static const float YAW_KD = 0.5f;
+    static const float HEIGHT_KP = 1.0f;
+    static const float HEIGHT_KI = 2.0f;
+    static const float HEIGHT_KD = 0.5f;
+
+
+
 };
 
 #endif /* MOTORCONTROL_HPP_ */

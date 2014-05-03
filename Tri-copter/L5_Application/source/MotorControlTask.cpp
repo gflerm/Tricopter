@@ -96,36 +96,38 @@ float servoCorrection = 0;
 void MotorControlTask::updateMotorServoControl()
 {
     PWMController &pwm_control = PWMController::getInstance();
-
     //millidegrees per second to radians per second
     float actual_roll = _toRadians(orientation.gx) / 1000.0f;
     float actual_pitch = _toRadians(orientation.gy) / 1000.0f;
     float actual_yaw = _toRadians(orientation.gz)/ 1000.0f;
 
-    //  axis x: right positive, left negative
-    //  axis y: up positive, down negative,
-    //  axis z: counterclockwise positive, clockwise negative
     target_roll = getSign(ZERO_X - orientation.x) * fabs(orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
     target_pitch = getSign(orientation.y - ZERO_Y) * fabs(orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
     target_yaw = getSign(ZERO_Z - orientation.z) * fabs(orientation.z - ZERO_Z) / timeToResolve(orientation.z,ZERO_Z);
 
+    float dt = MOTOR_CONTROL_UPDATE / 1000.0f;
+    float roll_output = pid_roll.calculate_output(actual_roll, target_roll, dt);
+    float pitch_output = pid_pitch.calculate_output(actual_pitch, target_pitch, dt);
+    float yaw_output = pid_yaw.calculate_output(actual_yaw, target_yaw, dt);
+
+    //Determine amount to decrease motors
+    //Help from line 126 in
+    //https://github.com/diydrones/ardupilot/blob/416e9457ce11ae37200e6380834b1c5f3a4cd2e5/libraries/AP_Motors/AP_MotorsTri.cpp
+    frontLeftCorrection = roll_output + pitch_output;
+    frontRightCorrection = -roll_output + pitch_output;
+    backCenterCorrection = -pitch_output;
+    servoCorrection = yaw_output;
+
    //Height control
    //  scale all percents by whether we are too low/high
-   baseMotorPower += SENSITIVITY_HEIGHT * getSign(currentHeightTarget - orientation.height);
-
-   //Determine amount to decrease motors
-   frontLeftCorrection += SENSITIVITY_X * (actual_roll - target_roll);
-   frontRightCorrection += SENSITIVITY_X * (target_roll - actual_roll);
-   backCenterCorrection += SENSITIVITY_Y * (actual_pitch - target_pitch);
-   servoCorrection = SENSITIVITY_Z * (target_yaw - actual_yaw);
-
+   baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
 
    //Now set the motor percents with the corrections and height scaling applied
    pwm_control.setPercent(frontRightMotor,
                           inRangeMotor( baseMotorPower + frontRightCorrection)
                           );
    pwm_control.setPercent(frontLeftMotor,
-                          inRangeMotor( baseMotorPower + frontLeftCorrection -10)
+                          inRangeMotor( baseMotorPower + frontLeftCorrection)
                           );
    pwm_control.setPercent(backCenterMotor,
                           inRangeMotor( baseMotorPower + backCenterCorrection)
