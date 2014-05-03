@@ -23,8 +23,8 @@ using namespace _10dof;
 //  e. Right front motor PWM port  2
 //  f. Back motor PWM port         3
 //  g. Servo PWM port              4
-//  h. Orientation roll (x): right positive, left negative
-//  i. Orientation pitch (y): up positive, down negative,
+//  h. Orientation roll (x): right negative, left positive
+//  i. Orientation pitch (y): up negative, down positive,
 //  j. Orientation yaw (z): ccw positive, cw negative
 class MotorControlTask : public scheduler_task
 {
@@ -96,19 +96,25 @@ private:
     float currentHeightTarget;
     float heightPrevious;
 
+    //Accumulative values
+    float frontRightAccum;
+    float frontLeftAccum;
+    float backCenterAccum;
+    float servoAccum;
+
     //Task control settings
     static const int STACK_SIZE_BYTES = 4096;
 
     //How often the motor control task should run
-    static const int MOTOR_CONTROL_UPDATE = 20; //ms, we can update the motor control at most 50 times/sec
+    static const int MOTOR_CONTROL_UPDATE = 500; //ms, we can update the motor control at most 50 times/sec
 
     //For timer purposes, so we can kill the power after a certain time
     const static int MAX_SEC = 75;
     const static int MIN_SEC = 5;
 
     //Maximum orientation angles before we kill the motors
-    static const float MAX_X_ANGLE = .349; //20 degrees on x and y, don't really care about z
-    static const float MAX_Y_ANGLE = .349;
+    static const float MAX_X_ANGLE = .200; //20 degrees on x and y, don't really care about z
+    static const float MAX_Y_ANGLE = .200;
     static const float MAX_HEIGHT = 24; //inches
 
     //PWM port assignments
@@ -118,23 +124,33 @@ private:
     static const PWMController::pwmType backCenterServo = PWMController::pwm4; //2.3
 
     //~~~~~~~~~~~~~~~~~ CALIBRATION SETTINGS ~~~~~~~~~~~~~~~~~~~~~~~~~
+    //PI gains
+    static const float PRESENT_GAIN = 1.00;
+    static const float ACCUM_GAIN = 0;
+
+    //Threshold to start accumulation
+    static const float ACCUM_THRESHOLD = .075;
+
+    //Accumulation rate
+    static const float ACCUM_RATE = 25;
+
     //These are base percentages that should be set to values which cause the tricopter to
     //almost hover in a somewhat stable position
-    static const float FRONT_LEFT_PERCENT = 40;
+    static const float FRONT_LEFT_PERCENT = 35;
     static const float FRONT_RIGHT_PERCENT = 49;
     static const float BACK_CENTER_PERCENT = 55.5;
     static const float SERVO_PERCENT = 41;
 
     //Sensitivity settings
-    static const float SENSITIVITY_X = 2; //scalar for how fast the motors should spin up
-    static const float SENSITIVITY_Y = 2;
+    static const float SENSITIVITY_X = 50; //scalar for how fast the motors should spin up
+    static const float SENSITIVITY_Y = 50;
     static const float SENSITIVITY_Z = 250; //servo
-    static const float SENSITIVITY_HEIGHT = .0005; //percent * 100
+    static const float SENSITIVITY_HEIGHT = .05; //percent * 100
     static const float CORRECTION_DEGREE = 1; //1 = linear, 2 = quadratic, etc
 
     //Targets for hovering
-    static const float ZERO_X = .038; //radians
-    static const float ZERO_Y = -.054;
+    static const float ZERO_X = .044; //radians
+    static const float ZERO_Y = -.020;
     static const float ZERO_Z = 0;
     static const float HOVER_HEIGHT_TARGET = 6; //inches
     static const float HEIGHT_VELOCITY_TARGET = .5; //inches per second
