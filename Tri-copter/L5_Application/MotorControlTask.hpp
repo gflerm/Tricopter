@@ -136,8 +136,8 @@ private:
     const static int MIN_SEC = 10;
 
     //Maximum orientation angles before we kill the motors
-    static const float MAX_X_ANGLE = .349/2.0; //20 degrees on x and y, don't really care about z
-    static const float MAX_Y_ANGLE = .349/2.0;
+    static const float MAX_X_ANGLE = 1; //20 degrees on x and y, don't really care about z
+    static const float MAX_Y_ANGLE = 1;
     static const float MAX_HEIGHT = 12; //inches
 
     //PWM port assignments
@@ -155,15 +155,15 @@ private:
     static const float SERVO_PERCENT = 46;
 
     //Sensitivity settings
-    static const float SENSITIVITY_X = 20; //scalar for how fast the motors should spin up
-    static const float SENSITIVITY_Y = 20;
-    static const float SENSITIVITY_Z = 1; //servo
-    static const float SENSITIVITY_HEIGHT = .2; //percent
+    static const float SENSITIVITY_X = 15; //scalar for how fast the motors should spin up
+    static const float SENSITIVITY_Y = 25;
+    static const float SENSITIVITY_Z = 250; //servo
+    static const float SENSITIVITY_HEIGHT = 15; //percent
     static const float CORRECTION_DEGREE = 2; //1 = linear, 2 = quadratic, etc
 
     //Targets for hovering
     static const float ZERO_X = .044; //radians
-    static const float ZERO_Y = -.020;
+    static const float ZERO_Y = -.040;
     static const float ZERO_Z = 0;
     static const float HOVER_HEIGHT_TARGET = 6; //inches
 
@@ -174,15 +174,18 @@ private:
     static const float PERCENT_MIN_SERVO = 0;
 
     //PID controller constants
-    static const float ROLL_KP = 0.15f;
-    static const float ROLL_KI = 0.10f;
-    static const float ROLL_KD = 0.004f;
-    static const float PITCH_KP = 0.15f;
+    static const float ROLL_KP = 1.000f;
+    static const float ROLL_KI = 0.00f;
+    static const float ROLL_KD = 0.00f;
+
+    static const float PITCH_KP = 0.10f;
     static const float PITCH_KI = 0.10f;
     static const float PITCH_KD = 0.004f;
-    static const float YAW_KP = 0.15f;
+
+    static const float YAW_KP = 0.5f;
     static const float YAW_KI = 0.10f;
     static const float YAW_KD = 0.004f;
+
     static const float HEIGHT_KP = 0.15f;
     static const float HEIGHT_KI = 0.10f;
     static const float HEIGHT_KD = 0.004f;

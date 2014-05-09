@@ -108,6 +108,7 @@ void debugTask(void* p)
         printf("Correction left motor: %f \n", frontLeftCorrection);
         printf("Correction right motor: %f \n", frontRightCorrection);
         printf("Correction back motor: %f \n", backCenterCorrection);
+        printf("Correction servo: %f\n", servoCorrection);
         vTaskDelay(500);
     }
 }

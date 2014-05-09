@@ -49,7 +49,7 @@ bool MotorControlTask::init()
     pwm_control.setPercent(frontLeftMotor, 0);
     pwm_control.setPercent(frontRightMotor, 0);
     pwm_control.setPercent(backCenterMotor, 0);
-    pwm_control.setPercent(backCenterServo, 50);
+    pwm_control.setPercent(backCenterServo, 45);
 
     return true;
 }
@@ -101,14 +101,24 @@ void MotorControlTask::updateMotorServoControl()
     float actual_pitch = _toRadians(orientation.gy) / 1000.0f;
     float actual_yaw = _toRadians(orientation.gz)/ 1000.0f;
 
-    target_roll = getSign(ZERO_X - orientation.x) * fabs(orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
-    target_pitch = getSign(orientation.y - ZERO_Y) * fabs(orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
+    target_roll = getSign(orientation.x - ZERO_X) * fabs(orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
+    target_pitch = getSign(ZERO_Y - orientation.y) * fabs(orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
     target_yaw = getSign(ZERO_Z - orientation.z) * fabs(orientation.z - ZERO_Z) / timeToResolve(orientation.z,ZERO_Z);
 
     float dt = MOTOR_CONTROL_UPDATE / 1000.0f;
     float roll_output = pid_roll.calculate_output(actual_roll, target_roll, dt);
     float pitch_output = pid_pitch.calculate_output(actual_pitch, target_pitch, dt);
     float yaw_output = pid_yaw.calculate_output(actual_yaw, target_yaw, dt);
+    baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
+
+    //Scale it up
+    roll_output *= SENSITIVITY_X;
+    pitch_output *= SENSITIVITY_Y;
+    yaw_output *= SENSITIVITY_Z;
+    baseMotorPower *= SENSITIVITY_HEIGHT;
+
+    //TODO remove
+    baseMotorPower = 43.0f;
 
     //Determine amount to decrease motors
     //Help from line 126 in
@@ -118,9 +128,11 @@ void MotorControlTask::updateMotorServoControl()
     backCenterCorrection = -pitch_output;
     servoCorrection = yaw_output;
 
-   //Height control
-   //  scale all percents by whether we are too low/high
-   baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
+    //Constant correctins
+    frontLeftCorrection -= 8;
+    frontRightCorrection += 5;
+    backCenterCorrection += 10;
+
 
    //Now set the motor percents with the corrections and height scaling applied
    pwm_control.setPercent(frontRightMotor,

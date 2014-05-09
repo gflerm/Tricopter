@@ -17,7 +17,7 @@ PIDController::PIDController(float _kp, float _ki, float _kd)
    ki = _ki;
    kd = _kd;
    integrator = 0.0f;
-   lastInput = 0.0f;
+   lastError = 0.0f;
 }
 
 float PIDController::get_kp()
@@ -35,9 +35,9 @@ float PIDController::get_kd()
    return kd;
 }
 
-float PIDController::calculate_output(float input, float target, float dt)
+float PIDController::calculate_output(float actual, float target, float dt)
 {
-   float error = target - input;
+   float error = target - actual;
 
    float p = error;
    float i = integrator += error * dt;

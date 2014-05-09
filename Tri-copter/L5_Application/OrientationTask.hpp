@@ -97,7 +97,7 @@ private:
      //i.e., if the output range is 10 bits and the g-range is +-2g then a reasonable
      //value would be between ~640 (.5g on only one axis) to ~2304 (3g over all axes)
      static const uint16_t ACCEL_MAGNITUDE_LOW = 125;
-     static const uint16_t ACCEL_MAGNITUDE_HIGH = 1000;
+     static const uint16_t ACCEL_MAGNITUDE_HIGH = 500;
 
      //constants
      static const float GRAVITY_ACCEL = 9.81;
