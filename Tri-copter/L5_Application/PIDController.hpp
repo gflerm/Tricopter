@@ -22,7 +22,7 @@ public:
 protected:
    float kp, ki, kd;
    float integrator;
-   float lastInput;
+   float lastError;
 };
 
 #endif /* PIDCONTROLLER_HPP_ */

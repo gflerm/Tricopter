@@ -39,13 +39,13 @@ float PIDController::calculate_output(float input, float target, float dt)
 {
    float error = target - input;
 
-   float p = kp * error;
-   float i = integrator += ki * error * dt;
-   float d = kd * (input - lastInput) / dt;
+   float p = error;
+   float i = integrator += error * dt;
+   float d = (error - lastError) / dt;
 
-   float output = p + i + d;
+   float output = (kp * p) + (ki * i) + (kd * d);
 
-   lastInput = input;
+   lastError = error;
    return output;
 }
 
