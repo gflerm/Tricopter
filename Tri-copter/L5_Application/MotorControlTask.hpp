@@ -174,18 +174,18 @@ private:
     static const float PERCENT_MIN_SERVO = 0;
 
     //PID controller constants
-    static const float ROLL_KP = 1.0f;
-    static const float ROLL_KI = 2.0f;
-    static const float ROLL_KD = 0.5f;
-    static const float PITCH_KP = 1.0f;
-    static const float PITCH_KI = 2.0f;
-    static const float PITCH_KD = 0.5f;
-    static const float YAW_KP = 1.0f;
-    static const float YAW_KI = 2.0f;
-    static const float YAW_KD = 0.5f;
-    static const float HEIGHT_KP = 1.0f;
-    static const float HEIGHT_KI = 2.0f;
-    static const float HEIGHT_KD = 0.5f;
+    static const float ROLL_KP = 0.15f;
+    static const float ROLL_KI = 0.10f;
+    static const float ROLL_KD = 0.004f;
+    static const float PITCH_KP = 0.15f;
+    static const float PITCH_KI = 0.10f;
+    static const float PITCH_KD = 0.004f;
+    static const float YAW_KP = 0.15f;
+    static const float YAW_KI = 0.10f;
+    static const float YAW_KD = 0.004f;
+    static const float HEIGHT_KP = 0.15f;
+    static const float HEIGHT_KI = 0.10f;
+    static const float HEIGHT_KD = 0.004f;
 
 
 
