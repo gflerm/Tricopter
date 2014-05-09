@@ -19,7 +19,10 @@ float MotorControlTask::timeToResolve(float orientation, float target)
     //How long should we take to resolve the problem?
     //Worst case (10 degrees) 0.5 seconds, best (0.00000... degrees) 0.05 seconds
 
-    return .1f / pow(fabs(orientation-target) + .13,CORRECTION_DEGREE);
+    float time = .4f / pow(fabs(orientation-target) + .33,CORRECTION_DEGREE);
+    if (time < 0.5)
+        time = 0.5;
+    return time;
 }
 
 float MotorControlTask::getSign(float value)
@@ -101,9 +104,9 @@ void MotorControlTask::updateMotorServoControl()
     float actual_pitch = _toRadians(orientation.gy) / 1000.0f;
     float actual_yaw = _toRadians(orientation.gz)/ 1000.0f;
 
-    target_roll = getSign(orientation.x - ZERO_X) * fabs(orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
-    target_pitch = getSign(ZERO_Y - orientation.y) * fabs(orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
-    target_yaw = getSign(ZERO_Z - orientation.z) * fabs(orientation.z - ZERO_Z) / timeToResolve(orientation.z,ZERO_Z);
+    target_roll = -1.0f * (orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
+    target_pitch = -1.0f * (orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
+    target_yaw = -1.0f * (orientation.z - ZERO_Z) / timeToResolve(orientation.z,ZERO_Z);
 
     float dt = MOTOR_CONTROL_UPDATE / 1000.0f;
     float roll_output = pid_roll.calculate_output(actual_roll, target_roll, dt);
@@ -123,9 +126,9 @@ void MotorControlTask::updateMotorServoControl()
     //Determine amount to decrease motors
     //Help from line 126 in
     //https://github.com/diydrones/ardupilot/blob/416e9457ce11ae37200e6380834b1c5f3a4cd2e5/libraries/AP_Motors/AP_MotorsTri.cpp
-    frontLeftCorrection = roll_output + pitch_output;
-    frontRightCorrection = -roll_output + pitch_output;
-    backCenterCorrection = -pitch_output;
+    frontLeftCorrection = -roll_output;// - pitch_output;
+    frontRightCorrection = roll_output;// - pitch_output;
+    backCenterCorrection = pitch_output;
     servoCorrection = yaw_output;
 
     //Constant correctins
