@@ -15,6 +15,8 @@
 #include "utilities.h"
 using namespace _10dof;
 
+#define AVERAGE_AMOUNT 4            //Adjust to change average filtering amount
+
 //Computes the orientation of the tricopter from a combination of the gyro and accelerometer.
 //Makes some assumptions:
 //  a. Z axis = vertical
@@ -76,6 +78,16 @@ private:
      orientation_t accel_calc;
 
      uint16_t accel_magnitude;
+
+     //Count for average filtering
+     uint8_t count;
+
+     //Average array for orientation
+     orientation_t orientation_avg[4];
+
+     //Compute average for filtering
+     void compute_average();
+
 
      //Use this to filter out garbage from ultrasonic sensor data readings
      float lastHeight;

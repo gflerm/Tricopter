@@ -43,6 +43,24 @@ bool OrientationTask::init()
 
     orientation_queue = xQueueCreate(1, (sizeof(orientation_t)));
 
+    count=0;
+
+    for(uint8_t i=0; i<AVERAGE_AMOUNT; i++)
+    {
+       orientation_avg[i].gz  = 0;
+       orientation_avg[i].gy = 0;
+       orientation_avg[i].gz = 0;
+       orientation_avg[i].height = 0;
+       orientation_avg[i].ax = 0;
+       orientation_avg[i].ay = 0;
+       orientation_avg[i].az = 0;
+       orientation_avg[i].x = 0;
+       orientation_avg[i].y = 0;
+       orientation_avg[i].z = 0;
+    }
+
+
+
     //Height Sensor
     LPC_SC->PCONP |= (1<<23); // enable hardware timer 3
     LPC_SC->PCLKSEL1 &=(1<<14); // USE CCLK
@@ -122,10 +140,53 @@ bool OrientationTask::run(void* p)
                              (FILTER_PERCENT_LOW  * accel_calc.x);
         orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + toRadians(gyro_data.y.word) * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW * accel_calc.y);
-        //Place calculated orientation in queue for motor control to receive, if there's space
-        //If there's not, we don't care and we don't wait
+
+    //Average Calcuated, sent to queue if there is space
+    //If there's not, we don't care and we don't wait
+    orientation_avg[count]=orientation;
+
+    if( count == AVERAGE_AMOUNT ){
+        count = 0;
+        compute_average();
         xQueueSend(orientation_queue, &orientation, 0);
+    }
+    else{
+        count++;
+    }
+
    }
 
     return true;
 }
+
+void OrientationTask::compute_average(){
+
+
+    for(uint8_t i=1; i<AVERAGE_AMOUNT; i++){
+        orientation_avg[0].gz += orientation_avg[i].gx;
+        orientation_avg[0].gy += orientation_avg[i].gy;
+        orientation_avg[0].gz += orientation_avg[i].gz;
+        orientation_avg[0].height += orientation_avg[i].height;
+        orientation_avg[0].ax += orientation_avg[i].ax;
+        orientation_avg[0].ay += orientation_avg[i].ay;
+        orientation_avg[0].az += orientation_avg[i].az;
+        orientation_avg[0].x += orientation_avg[i].x;
+        orientation_avg[0].y += orientation_avg[i].y;
+        orientation_avg[0].z += orientation_avg[i].z;
+    }
+
+    orientation_avg[0].gx = orientation_avg[0].gx/AVERAGE_AMOUNT;
+    orientation_avg[0].gy = orientation_avg[0].gy/AVERAGE_AMOUNT;
+    orientation_avg[0].gz = orientation_avg[0].gz/AVERAGE_AMOUNT;
+    orientation_avg[0].height = orientation_avg[0].height/AVERAGE_AMOUNT;
+    orientation_avg[0].ax = orientation_avg[0].ax/AVERAGE_AMOUNT;
+    orientation_avg[0].ay = orientation_avg[0].ay/AVERAGE_AMOUNT;
+    orientation_avg[0].az = orientation_avg[0].az/AVERAGE_AMOUNT;
+    orientation_avg[0].x = orientation_avg[0].x/AVERAGE_AMOUNT;
+    orientation_avg[0].y = orientation_avg[0].y/AVERAGE_AMOUNT;
+    orientation_avg[0].z = orientation_avg[0].z/AVERAGE_AMOUNT;
+
+   orientation=orientation_avg[0];
+}
+
+
