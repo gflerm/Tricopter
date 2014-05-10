@@ -129,9 +129,9 @@ void MotorControlTask::updateMotorServoControl()
     servoCorrection = yaw_output;
 
     //Constant correctins
-    frontLeftCorrection -= 8;
+    frontLeftCorrection -= 20; //8
     frontRightCorrection += 5;
-    backCenterCorrection += 12;
+    backCenterCorrection += 10;
 
 
    //Now set the motor percents with the corrections and height scaling applied
@@ -162,6 +162,7 @@ void MotorControlTask::updateMotorServoControl()
 
 bool MotorControlTask::violatesFailSafe()
 {
+    /*
     if (std::abs(orientation.x) > MAX_X_ANGLE) {
         printf("Killed due to orientation.x of %f \n", orientation.x);
         printf("Accel x: %f \n", orientation.ax);
@@ -175,7 +176,7 @@ bool MotorControlTask::violatesFailSafe()
         printf("Killed due to height of %f", orientation.height);
         return true;
     }
-
+    */
     return false;
 }
 

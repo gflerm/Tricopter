@@ -96,8 +96,8 @@ bool OrientationTask::run(void* p)
     orientation.az = (accel_data.z.word << 4);
 
     //Integrate gyroscope data
-    orientation.x += toRadians((gyro_data.x.word)) * secondsSinceLastUpdate;
-    orientation.y += toRadians((gyro_data.y.word)) * secondsSinceLastUpdate;
+    //orientation.x += toRadians((gyro_data.x.word)) * secondsSinceLastUpdate;
+    //orientation.y += toRadians((gyro_data.y.word)) * secondsSinceLastUpdate;
     if (std::abs(gyro_data.z.word) > GYRO_NOISE_FLOOR)
         orientation.z += toRadians((gyro_data.z.word)) * secondsSinceLastUpdate;
 
@@ -122,11 +122,10 @@ bool OrientationTask::run(void* p)
                              (FILTER_PERCENT_LOW  * accel_calc.x);
         orientation.y = (FILTER_PERCENT_HIGH * (orientation.y + toRadians(gyro_data.y.word) * secondsSinceLastUpdate)) +
                              (FILTER_PERCENT_LOW * accel_calc.y);
+        //Place calculated orientation in queue for motor control to receive, if there's space
+        //If there's not, we don't care and we don't wait
+        xQueueSend(orientation_queue, &orientation, 0);
    }
-
-    //Place calculated orientation in queue for motor control to receive, if there's space
-    //If there's not, we don't care and we don't wait
-    xQueueSend(orientation_queue, &orientation, 0);
 
     return true;
 }
