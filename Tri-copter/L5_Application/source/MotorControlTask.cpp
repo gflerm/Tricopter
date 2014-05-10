@@ -105,7 +105,7 @@ void MotorControlTask::updateMotorServoControl()
     float actual_yaw = _toRadians(orientation.gz)/ 1000.0f;
 
     target_roll = -1.0f * (orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
-    target_pitch = -1.0f * (orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
+    target_pitch = (orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
     target_yaw = -1.0f * (orientation.z - ZERO_Z) / timeToResolve(orientation.z,ZERO_Z);
 
     float dt = MOTOR_CONTROL_UPDATE / 1000.0f;
@@ -120,21 +120,18 @@ void MotorControlTask::updateMotorServoControl()
     yaw_output *= SENSITIVITY_Z;
     baseMotorPower *= SENSITIVITY_HEIGHT;
 
-    //TODO remove
-    baseMotorPower = 43.0f;
-
     //Determine amount to decrease motors
     //Help from line 126 in
     //https://github.com/diydrones/ardupilot/blob/416e9457ce11ae37200e6380834b1c5f3a4cd2e5/libraries/AP_Motors/AP_MotorsTri.cpp
-    frontLeftCorrection = -roll_output;// - pitch_output;
-    frontRightCorrection = roll_output;// - pitch_output;
-    backCenterCorrection = pitch_output;
+    frontLeftCorrection = -roll_output;
+    frontRightCorrection = roll_output;
+    backCenterCorrection = -pitch_output;
     servoCorrection = yaw_output;
 
     //Constant correctins
     frontLeftCorrection -= 8;
     frontRightCorrection += 5;
-    backCenterCorrection += 10;
+    backCenterCorrection += 12;
 
 
    //Now set the motor percents with the corrections and height scaling applied
