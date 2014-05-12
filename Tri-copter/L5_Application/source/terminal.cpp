@@ -87,7 +87,7 @@ bool terminalTask::taskEntry()
     cp.addHandler(newFileHandler,"nf",    "Write a new file. Ex: 'nf <file.txt>");
     cp.addHandler(rmHandler,     "rm",    "Remove a file. Ex: 'rm 0:file.txt'");
 
-    //Tri-Copter related Handles
+
 
 
     // Misc. handlers
@@ -101,6 +101,8 @@ bool terminalTask::taskEntry()
     cp.addHandler(learnIrHandler,  "learn",    "Begin to learn IR codes for numbers 0-9");
     cp.addHandler(wirelessHandler, "wireless", "Use 'wireless' to see the nested commands");
 
+    //Tri-Copter related Handles
+    cp.addHandler(pid_set, "pidset", "pidset <r|p|y|h> <kp> <ki> <kd> <ks>");
     cp.addHandler(pwm_set, "pwmset", "pwmset <port 1-6> <percent 0-100>");
     cp.addHandler(killcopter, "kill", "Kill all motors");
 

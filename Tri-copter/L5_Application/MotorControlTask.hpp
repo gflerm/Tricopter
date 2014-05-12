@@ -45,11 +45,7 @@ public:
     //MotorControlTask()
     //Supplies some default values to the scheduler_task constructor
     MotorControlTask(QueueHandle_t or_queue)
-                   : scheduler_task("motor_control_task", STACK_SIZE_BYTES, PRIORITY_MEDIUM, NULL),
-                     pid_roll(ROLL_KP, ROLL_KI, ROLL_KD),
-                     pid_pitch(PITCH_KP, PITCH_KI, PITCH_KD),
-                     pid_yaw(YAW_KP, YAW_KI, YAW_KD),
-                     pid_height(HEIGHT_KP, HEIGHT_KI, HEIGHT_KD)
+                   : scheduler_task("motor_control_task", STACK_SIZE_BYTES, PRIORITY_MEDIUM, NULL)
     {
         orientation_queue = or_queue;
     };
@@ -63,11 +59,6 @@ public:
     bool run(void* p);
 
 private:
-
-    PIDController pid_roll;
-    PIDController pid_pitch;
-    PIDController pid_yaw;
-    PIDController pid_height;
 
     //checkFailSafe
     //Returns TRUE if fail safe conditions are violated, FALSE otherwise
@@ -154,11 +145,7 @@ private:
     static const float BACK_CENTER_PERCENT = 58;
     static const float SERVO_PERCENT = 46;
 
-    //Sensitivity settings
-    static const float SENSITIVITY_X = 30.5; //scalar for how fast the motors should spin up
-    static const float SENSITIVITY_Y = 35.5;
-    static const float SENSITIVITY_Z = 500; //servo
-    static const float SENSITIVITY_HEIGHT = 2; //percent
+
     static const float CORRECTION_DEGREE = 1; //1 = linear, 2 = quadratic, etc
 
     //Targets for hovering
@@ -172,24 +159,6 @@ private:
     static const float PERCENT_MIN_MOTOR = 9;
     static const float PERCENT_MAX_SERVO = 100;
     static const float PERCENT_MIN_SERVO = 0;
-
-    //PID controller constants
-    static const float ROLL_KP = 0.40f;//.55
-    static const float ROLL_KI = 0.40f;
-    static const float ROLL_KD = 0.20f;
-
-    static const float PITCH_KP = 1.0f;
-    static const float PITCH_KI = 0.0f;
-    static const float PITCH_KD = 0.0f;
-
-    static const float YAW_KP = 0.5f;
-    static const float YAW_KI = 0.10f;
-    static const float YAW_KD = 0.004f;
-
-    static const float HEIGHT_KP = 0.30f;
-    static const float HEIGHT_KI = 0.60f;
-    static const float HEIGHT_KD = 0.10f;
-
 
 
 };

@@ -9,9 +9,11 @@
 #include <algorithm> //max
 #include <cmath> //abs
 #include <cstdio> //debug
+#include "pid_controllers.hpp"
 
 //Shane is retarded
 #define _toRadians(deg) (deg*M_PI/180.0f)
+#define inline_function_snob "Michael"
 
 float MotorControlTask::timeToResolve(float orientation, float target)
 {
@@ -114,11 +116,6 @@ void MotorControlTask::updateMotorServoControl()
     float yaw_output = pid_yaw.calculate_output(actual_yaw, target_yaw, dt);
     baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
 
-    //Scale it up
-    roll_output *= SENSITIVITY_X;
-    pitch_output *= SENSITIVITY_Y;
-    yaw_output *= SENSITIVITY_Z;
-    baseMotorPower *= SENSITIVITY_HEIGHT;
 
     //Determine amount to decrease motors
     //Help from line 126 in

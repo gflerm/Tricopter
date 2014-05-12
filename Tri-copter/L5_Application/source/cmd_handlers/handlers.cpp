@@ -56,6 +56,68 @@ CMD_HANDLER_FUNC(killcopter)
     return true;
 }
 
+#include "pid_controllers.hpp"
+CMD_HANDLER_FUNC(pid_set)
+{
+    //Set the PID functions for the given axis
+    //Axes: r (roll), p (pitch), y (yaw), h (height)
+    //expect 4 arguments
+    int space_pos = 0;
+
+    //get five arguments
+    const int numArgs = 5;
+    str args[numArgs];
+    for (int a = 0; a < numArgs; a++)
+    {
+        //find next space separating arguments
+        space_pos = cmdParams.firstIndexOf(" ");
+        if (space_pos == -1)
+        {
+            space_pos = cmdParams.getLen();
+        }
+
+        //Substr to get the next argument
+        args[a] = cmdParams.subString(0, space_pos);
+        if (!args[a].getLen())
+        {
+            output.printf("Could not find argument %d\n", a);
+            return false;
+        }
+        //Consume the argument we found
+        if (space_pos + 1 > cmdParams.getLen())
+            space_pos = cmdParams.getLen() - 1;
+        cmdParams.eraseFirst(space_pos+1);
+        //output.printf("got arg (%s)\n", args[a].c_str());
+    }
+
+    //Got our arguments, make sure they're sane
+    PIDController *pidc = 0;
+    if (args[0] == "r")
+        pidc = &pid_roll;
+    else if (args[0] == "p")
+        pidc = &pid_pitch;
+    else if (args[0] == "y")
+        pidc = &pid_yaw;
+    else if (args[0] == "h")
+        pidc = &pid_height;
+    else
+    {
+        output.printf("Invalid axis (%s)\n", args[0].c_str());
+        return false;
+    }
+
+    float kp = (float) args[1];
+    float ki = (float) args[2];
+    float kd = (float) args[3];
+    float ks = (float) args[4];
+
+    pidc->updateConstants(kp,ki,kd,ks);
+
+    output.printf("Updated constants kp %f ki %f kd %f ks %f\n", kp, ki, kd, ks);
+    return true;
+}
+
+
 CMD_HANDLER_FUNC(pwm_set)
 {
     PWMController &pwm = PWMController::getInstance();
