@@ -145,10 +145,10 @@ bool OrientationTask::run(void* p)
     //If there's not, we don't care and we don't wait
     orientation_avg[count]=orientation;
 
-    if( count == AVERAGE_AMOUNT ){
+    if( count == AVERAGE_AMOUNT-1){
         count = 0;
         compute_average();
-        xQueueSend(orientation_queue, &orientation, 0);
+        xQueueSend(orientation_queue, &orientation_avg[0], 0);
     }
     else{
         count++;
@@ -186,7 +186,7 @@ void OrientationTask::compute_average(){
     orientation_avg[0].y = orientation_avg[0].y/AVERAGE_AMOUNT;
     orientation_avg[0].z = orientation_avg[0].z/AVERAGE_AMOUNT;
 
-   orientation=orientation_avg[0];
+ 
 }
 
 
