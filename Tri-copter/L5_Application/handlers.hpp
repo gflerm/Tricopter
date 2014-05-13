@@ -27,6 +27,7 @@
 
 #include "command_handler.hpp"
 
+CMD_HANDLER_FUNC(pid_get);
 CMD_HANDLER_FUNC(pid_set);
 CMD_HANDLER_FUNC(pwm_set);
 CMD_HANDLER_FUNC(killcopter);

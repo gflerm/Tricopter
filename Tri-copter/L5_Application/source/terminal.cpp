@@ -103,6 +103,7 @@ bool terminalTask::taskEntry()
 
     //Tri-Copter related Handles
     cp.addHandler(pid_set, "pidset", "pidset <r|p|y|h> <kp> <ki> <kd> <ks>");
+    cp.addHandler(pid_get, "pidget", "pidget");
     cp.addHandler(pwm_set, "pwmset", "pwmset <port 1-6> <percent 0-100>");
     cp.addHandler(killcopter, "kill", "Kill all motors");
 

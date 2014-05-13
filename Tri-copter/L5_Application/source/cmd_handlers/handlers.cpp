@@ -117,6 +117,34 @@ CMD_HANDLER_FUNC(pid_set)
     return true;
 }
 
+CMD_HANDLER_FUNC(pid_get)
+{
+    output.printf("Roll kp %f ki %f kd %f ks %f\n",
+        pid_roll.get_kp(),
+        pid_roll.get_ki(),
+        pid_roll.get_kd(),
+        pid_roll.get_ks());
+
+    output.printf("Pitch kp %f ki %f kd %f ks %f\n",
+        pid_pitch.get_kp(),
+        pid_pitch.get_ki(),
+        pid_pitch.get_kd(),
+        pid_pitch.get_ks());
+
+    output.printf("Yaw kp %f ki %f kd %f ks %f\n",
+        pid_yaw.get_kp(),
+        pid_yaw.get_ki(),
+        pid_yaw.get_kd(),
+        pid_yaw.get_ks());
+
+    output.printf("Height kp %f ki %f kd %f ks %f\n",
+        pid_height.get_kp(),
+        pid_height.get_ki(),
+        pid_height.get_kd(),
+        pid_height.get_ks());
+
+    return true;
+}
 
 CMD_HANDLER_FUNC(pwm_set)
 {
