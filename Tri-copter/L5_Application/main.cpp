@@ -89,6 +89,13 @@ void debug_trigger(void *)
 extern float target_roll;
 extern float target_pitch;
 extern float target_yaw;
+extern float actual_roll;
+extern float actual_pitch;
+extern float actual_yaw;
+extern float actual_roll_min;
+extern float actual_roll_max;
+extern float target_roll_min;
+extern float target_roll_max;
 
 void debugTask(void* p)
 {
@@ -109,6 +116,9 @@ void debugTask(void* p)
         printf("Correction right motor: %f \n", frontRightCorrection);
         printf("Correction back motor: %f \n", backCenterCorrection);
         printf("Correction servo: %f\n", servoCorrection);
+        printf("Actual roll: %f, pitch %f, yaw %f radian/sec\n", actual_roll, actual_pitch, actual_yaw);
+       // printf("Max roll: %f, min roll: %f radian/sec\n", actual_roll_max, actual_roll_min);
+        //printf("Max target roll: %f, min target roll %f radian/sec\n", target_roll_max);
         vTaskDelay(500);
     }
 }

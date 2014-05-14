@@ -32,6 +32,12 @@ float MotorControlTask::getSign(float value)
     return value > 0 ? 1.0f : -1.0f;
 }
 
+float actual_roll_max;
+float actual_roll_min;
+
+float target_roll_max;
+float target_roll_min;
+
 bool MotorControlTask::init()
 {
     PWMController &pwm_control = PWMController::getInstance();
@@ -56,8 +62,16 @@ bool MotorControlTask::init()
     pwm_control.setPercent(backCenterMotor, 0);
     pwm_control.setPercent(backCenterServo, 45);
 
+    actual_roll_min = 100000;
+    actual_roll_max = -100000;
+
+    target_roll_min = 100000;
+    target_roll_max = -100000;
+
     return true;
 }
+
+
 
 bool MotorControlTask::run(void* p)
 {
@@ -98,24 +112,38 @@ float frontRightCorrection = 0;
 float backCenterCorrection = 0;
 float servoCorrection = 0;
 
+float actual_roll;
+float actual_pitch;
+float actual_yaw;
+
 void MotorControlTask::updateMotorServoControl()
 {
     PWMController &pwm_control = PWMController::getInstance();
     //millidegrees per second to radians per second
-    float actual_roll = _toRadians(orientation.gx) / 1000.0f;
-    float actual_pitch = _toRadians(orientation.gy) / 1000.0f;
-    float actual_yaw = _toRadians(orientation.gz)/ 1000.0f;
+    actual_roll = _toRadians(orientation.gx) / 1000.0f;
+    actual_pitch = _toRadians(orientation.gy) / 1000.0f;
+    actual_yaw = _toRadians(orientation.gz)/ 1000.0f;
 
-    target_roll = -1.0f * (orientation.x - ZERO_X) / timeToResolve(orientation.x,ZERO_X);
-    target_pitch = (orientation.y - ZERO_Y) / timeToResolve(orientation.y,ZERO_Y);
-    target_yaw = -1.0f * (orientation.z - ZERO_Z) / timeToResolve(orientation.z,ZERO_Z);
+    if (actual_roll > actual_roll_max)
+        actual_roll_max = actual_roll;
+    if (actual_roll < actual_roll_min)
+        actual_roll_min = actual_roll;
+
+    if (target_roll > target_roll_max)
+        target_roll_max = target_roll;
+    if (target_roll < target_roll_min)
+        target_roll_min = target_roll;
+
+    //Delete the 20
+    target_roll = -1.0f * (orientation.x - ZERO_X) / (timeToResolve(orientation.x,ZERO_X) * 20);
+    target_pitch = (orientation.y - ZERO_Y) / (timeToResolve(orientation.y,ZERO_Y) * 10);
+    target_yaw = -1.0f * (orientation.z - ZERO_Z) / (timeToResolve(orientation.z,ZERO_Z) * 10);
 
     float dt = MOTOR_CONTROL_UPDATE / 1000.0f;
     float roll_output = pid_roll.calculate_output(actual_roll, target_roll, dt);
     float pitch_output = pid_pitch.calculate_output(actual_pitch, target_pitch, dt);
     float yaw_output = pid_yaw.calculate_output(actual_yaw, target_yaw, dt);
     baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
-
 
     //Determine amount to decrease motors
     //Help from line 126 in
@@ -125,11 +153,8 @@ void MotorControlTask::updateMotorServoControl()
     backCenterCorrection = -pitch_output;
     servoCorrection = yaw_output;
 
-    //Constant correctins
-    frontLeftCorrection -= 20; //8
-    frontRightCorrection += 5;
-    backCenterCorrection += 10;
-
+    //TODO DELETE MEEEEEEEEEEEEE
+    baseMotorPower = 20;
 
    //Now set the motor percents with the corrections and height scaling applied
    pwm_control.setPercent(frontRightMotor,

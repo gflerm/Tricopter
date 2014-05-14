@@ -9,23 +9,23 @@
 
 
 //Sensitivity settings
-static const float SENSITIVITY_X = 30.5; //scalar for how fast the motors should spin up
-static const float SENSITIVITY_Y = 35.5;
-static const float SENSITIVITY_Z = 500; //servo
+static const float SENSITIVITY_X = 700; //scalar for how fast the motors should spin up
+static const float SENSITIVITY_Y = 700;
+static const float SENSITIVITY_Z = 100; //servo
 static const float SENSITIVITY_HEIGHT = 2; //percent
 
 //PID controller constants
-static const float ROLL_KP = 0.40f;//.55
-static const float ROLL_KI = 0.40f;
-static const float ROLL_KD = 0.20f;
+static const float ROLL_KP = 0.6f;//.55
+static const float ROLL_KI = 0.35f;
+static const float ROLL_KD = 0.05f;
 
-static const float PITCH_KP = 1.0f;
-static const float PITCH_KI = 0.0f;
-static const float PITCH_KD = 0.0f;
+static const float PITCH_KP = 0.6f;
+static const float PITCH_KI = 0.35f;
+static const float PITCH_KD = 0.05f;
 
-static const float YAW_KP = 0.5f;
-static const float YAW_KI = 0.10f;
-static const float YAW_KD = 0.004f;
+static const float YAW_KP = 0.6f;
+static const float YAW_KI = 0.35f;
+static const float YAW_KD = 0.05f;
 
 static const float HEIGHT_KP = 0.30f;
 static const float HEIGHT_KI = 0.60f;

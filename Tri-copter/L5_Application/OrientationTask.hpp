@@ -103,7 +103,7 @@ private:
      static const float FILTER_PERCENT_LOW = .02;
 
      //Gyro noise filter
-     static const float GYRO_NOISE_FLOOR = 250;
+     static const float GYRO_NOISE_FLOOR = 0;
 
      //These should be set depending upon the output range of the accelerometer
      //i.e., if the output range is 10 bits and the g-range is +-2g then a reasonable

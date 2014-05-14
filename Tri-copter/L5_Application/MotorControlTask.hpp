@@ -155,12 +155,10 @@ private:
     static const float HOVER_HEIGHT_TARGET = 12; //inches
 
     //Limits for motor speed and servo position
-    static const float PERCENT_MAX_MOTOR = 54;
+    static const float PERCENT_MAX_MOTOR = 70;
     static const float PERCENT_MIN_MOTOR = 9;
     static const float PERCENT_MAX_SERVO = 100;
     static const float PERCENT_MIN_SERVO = 0;
-
-
 };
 
 #endif /* MOTORCONTROL_HPP_ */

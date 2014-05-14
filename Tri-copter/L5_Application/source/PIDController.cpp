@@ -11,6 +11,8 @@
 //https://github.com/diydrones/ardupilot/blob/6af705d4554defc27aa475dab99f918b26de3ce1/libraries/AC_PID/AC_PID.cpp
 //https://github.com/osPID/osPID-Firmware/blob/master/osPID_Firmware/PID_v1.cpp
 
+#define I_MAX 30
+
 PIDController::PIDController(float _kp, float _ki, float _kd, float _ks)
 {
    kp = _kp;
@@ -47,6 +49,7 @@ void PIDController::updateConstants(float _kp, float _ki, float _kd, float _ks)
     ki = _ki;
     kd = _kd;
     ks = _ks;
+    integrator = 0;
 }
 
 float PIDController::calculate_output(float actual, float target, float dt)
@@ -55,6 +58,10 @@ float PIDController::calculate_output(float actual, float target, float dt)
 
    float p = error;
    float i = integrator += error * dt;
+   if (i * ks > I_MAX)
+       i = I_MAX / ks;
+   if (i * ks < -I_MAX)
+       i = -I_MAX / ks;
    float d = (error - lastError) / dt;
 
    float output = (kp * p) + (ki * i) + (kd * d);
