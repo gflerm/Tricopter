@@ -145,12 +145,11 @@ private:
     static const float BACK_CENTER_PERCENT = 58;
     static const float SERVO_PERCENT = 46;
 
-
     static const float CORRECTION_DEGREE = 1; //1 = linear, 2 = quadratic, etc
 
     //Targets for hovering
-    static const float ZERO_X = .040; //radians
-    static const float ZERO_Y = -.030;
+    static const float ZERO_X = .023; //radians
+    static const float ZERO_Y = -.007;
     static const float ZERO_Z = 0;
     static const float HOVER_HEIGHT_TARGET = 12; //inches
 
