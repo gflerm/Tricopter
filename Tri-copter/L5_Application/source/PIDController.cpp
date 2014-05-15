@@ -1,9 +1,9 @@
 /*
- * PIDController.cpp
- *
- *  Created on: May 2, 2014
- *      Author: sloretz
- */
+* PIDController.cpp
+*
+* Created on: May 2, 2014
+* Author: sloretz
+*/
 
 #include "PIDController.hpp"
 
@@ -54,20 +54,20 @@ void PIDController::updateConstants(float _kp, float _ki, float _kd, float _ks)
 
 float PIDController::calculate_output(float actual, float target, float dt)
 {
-   float error = target - actual;
+    float error = target - actual;
 
-   float p = error;
-   float i = integrator += error * dt;
-   if (i * ks > I_MAX)
-       i = I_MAX / ks;
-   if (i * ks < -I_MAX)
-       i = -I_MAX / ks;
-   float d = (error - lastError) / dt;
+    float p = error;
+    integrator += error * dt;
+    if (integrator > I_MAX / ks)
+        integrator = I_MAX / ks;
+    if (integrator < -I_MAX / ks)
+        integrator = -I_MAX / ks;
+    float i = integrator;
+    float d = (error - lastError) / dt;
 
-   float output = (kp * p) + (ki * i) + (kd * d);
+    float output = (kp * p) + (ki * i) + (kd * d);
 
-   lastError = error;
-   return ks * output;
+    lastError = error;
+    return ks * output;
 }
-
 
