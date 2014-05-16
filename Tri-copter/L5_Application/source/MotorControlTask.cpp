@@ -134,27 +134,32 @@ void MotorControlTask::updateMotorServoControl()
     if (target_roll < target_roll_min)
         target_roll_min = target_roll;
 
-    //Delete the 20
     target_roll = -1.0f * (orientation.x - ZERO_X) / (timeToResolve(orientation.x,ZERO_X) * 20);
-    target_pitch = (orientation.y - ZERO_Y) / (timeToResolve(orientation.y,ZERO_Y) * 10);
+    target_pitch = (orientation.y - ZERO_Y) / (timeToResolve(orientation.y,ZERO_Y) * 4);
     target_yaw = -1.0f * (orientation.z - ZERO_Z) / (timeToResolve(orientation.z,ZERO_Z) * 10);
 
     float dt = MOTOR_CONTROL_UPDATE / 1000.0f;
     float roll_output = pid_roll.calculate_output(actual_roll, target_roll, dt);
     float pitch_output = pid_pitch.calculate_output(actual_pitch, target_pitch, dt);
     float yaw_output = pid_yaw.calculate_output(actual_yaw, target_yaw, dt);
-    baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
+   // baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
+    if (baseMotorPower < 20)
+    {
+        if (tickCount % 5 == 0)
+        {
+            baseMotorPower++;
+            printf("%i\n", tickCount);
+        }
+    }
+    //baseMotorPower = 20;
 
     //Determine amount to decrease motors
     //Help from line 126 in
     //https://github.com/diydrones/ardupilot/blob/416e9457ce11ae37200e6380834b1c5f3a4cd2e5/libraries/AP_Motors/AP_MotorsTri.cpp
-    frontLeftCorrection = -roll_output;
-    frontRightCorrection = roll_output;
+    frontLeftCorrection = -roll_output + pitch_output/2;
+    frontRightCorrection = roll_output + pitch_output/2;
     backCenterCorrection = -pitch_output;
     servoCorrection = yaw_output;
-
-    //TODO DELETE MEEEEEEEEEEEEE
-    baseMotorPower = 20;
 
    //Now set the motor percents with the corrections and height scaling applied
    pwm_control.setPercent(frontRightMotor,

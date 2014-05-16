@@ -57,11 +57,12 @@ float PIDController::calculate_output(float actual, float target, float dt)
    float error = target - actual;
 
    float p = error;
-   float i = integrator += error * dt;
-   if (i * ks > I_MAX)
-       i = I_MAX / ks;
-   if (i * ks < -I_MAX)
-       i = -I_MAX / ks;
+   integrator += error * dt;
+   if (integrator * ks > I_MAX)
+       integrator = I_MAX / ks;
+   if (integrator * ks < -I_MAX)
+       integrator = -I_MAX / ks;
+   float i = integrator;
    float d = (error - lastError) / dt;
 
    float output = (kp * p) + (ki * i) + (kd * d);
