@@ -103,20 +103,18 @@ void debugTask(void* p)
     while (true)
     {
         printf("-------------------------------\n");
-        printf("Acceleration x: %f, y: %f, z: %f\n", orientation->get_raw_accel().x.word * 4.0 / 1000.0,  orientation->get_raw_accel().y.word * 4.0 / 1000.0,  orientation->get_raw_accel().z.word * 4.0 / 1000.0);
-        printf("Gyro x: %d, y: %d, z: %d\n", orientation->get_raw_gyro().x.word,  orientation->get_raw_gyro().y.word,  orientation->get_raw_gyro().z.word);
-        printf("Orientation x: %f\n", orientation->get_orientation()->x);
-        printf("Orientation y: %f\n", orientation->get_orientation()->y);
-        printf("Orientation z: %f\n", orientation->get_orientation()->z);
+        printf("Ax: %f Ay: %f Az: %f\n", orientation->get_raw_accel().x.word * 4.0 / 1000.0,  orientation->get_raw_accel().y.word * 4.0 / 1000.0,  orientation->get_raw_accel().z.word * 4.0 / 1000.0);
+        printf("Gx: %d Gy: %d Gz: %d\n", orientation->get_raw_gyro().x.word,  orientation->get_raw_gyro().y.word,  orientation->get_raw_gyro().z.word);
+        printf("Ox: %f Oy: %f Oz: %f\n", orientation->get_orientation()->x,
+                orientation->get_orientation()->y,
+                orientation->get_orientation()->z);
         printf("Height: %f\n", orientation->get_orientation()->height);
-        printf("Target roll: %f\n", target_roll);
-        printf("Target pitch: %f\n", target_pitch);
-        printf("Target yaw: %f\n", target_yaw);
-        printf("Correction left motor: %f \n", frontLeftCorrection);
-        printf("Correction right motor: %f \n", frontRightCorrection);
-        printf("Correction back motor: %f \n", backCenterCorrection);
-        printf("Correction servo: %f\n", servoCorrection);
-        printf("Actual roll: %f, pitch %f, yaw %f radian/sec\n", actual_roll, actual_pitch, actual_yaw);
+        printf("Tr: %f Tp: %f Ty: %f\n", target_roll,
+                target_pitch, target_yaw);
+        printf("Ar: %f Ap: %f Ay: %f radian/sec\n", actual_roll,
+                actual_pitch, actual_yaw);
+        printf("Clm: %f Crm: %f Cbm: %f Cs: %f\n", frontLeftCorrection,
+                frontRightCorrection, backCenterCorrection, servoCorrection);
        // printf("Max roll: %f, min roll: %f radian/sec\n", actual_roll_max, actual_roll_min);
         //printf("Max target roll: %f, min target roll %f radian/sec\n", target_roll_max);
         vTaskDelay(500);

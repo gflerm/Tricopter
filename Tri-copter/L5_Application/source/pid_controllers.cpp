@@ -9,8 +9,8 @@
 
 
 //Sensitivity settings
-static const float SENSITIVITY_X = 250; //scalar for how fast the motors should spin up
-static const float SENSITIVITY_Y = 0;
+static const float SENSITIVITY_X = 700; //scalar for how fast the motors should spin up
+static const float SENSITIVITY_Y = 550;
 static const float SENSITIVITY_Z = 150; //servo
 static const float SENSITIVITY_HEIGHT = 2.5; //percent
 

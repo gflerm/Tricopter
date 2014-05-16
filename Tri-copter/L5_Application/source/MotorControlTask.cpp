@@ -134,7 +134,7 @@ void MotorControlTask::updateMotorServoControl()
     if (target_roll < target_roll_min)
         target_roll_min = target_roll;
 
-    target_roll = -1.0f * (orientation.x - ZERO_X) / (timeToResolve(orientation.x,ZERO_X) * 20);
+    target_roll = -1.0f * (orientation.x - ZERO_X) / (timeToResolve(orientation.x,ZERO_X) * 2);
     target_pitch = (orientation.y - ZERO_Y) / (timeToResolve(orientation.y,ZERO_Y) * 4);
     target_yaw = -1.0f * (orientation.z - ZERO_Z) / (timeToResolve(orientation.z,ZERO_Z) * 10);
 
