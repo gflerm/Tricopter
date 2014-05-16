@@ -13,13 +13,13 @@
 
 #define I_MAX 30
 
-PIDController::PIDController(float _kp, float _ki, float _kd, float _ks)
+PIDController::PIDController(float _kp, float _ki, float _init_i, float _kd, float _ks)
 {
    kp = _kp;
    ki = _ki;
    kd = _kd;
    ks = _ks;
-   integrator = 0.0f;
+   integrator = _init_i;
    lastError = 0.0f;
 }
 

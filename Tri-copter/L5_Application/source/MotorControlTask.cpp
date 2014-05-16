@@ -142,8 +142,8 @@ void MotorControlTask::updateMotorServoControl()
     float roll_output = pid_roll.calculate_output(actual_roll, target_roll, dt);
     float pitch_output = pid_pitch.calculate_output(actual_pitch, target_pitch, dt);
     float yaw_output = pid_yaw.calculate_output(actual_yaw, target_yaw, dt);
-   // baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
-    baseMotorPower = 20;
+    baseMotorPower = pid_height.calculate_output(orientation.height, currentHeightTarget, dt);
+    //baseMotorPower = 15;
 
     //Determine amount to decrease motors
     //Help from line 126 in

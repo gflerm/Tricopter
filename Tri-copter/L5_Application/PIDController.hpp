@@ -10,7 +10,7 @@
 
 class PIDController {
 public:
-   PIDController(float kp, float ki, float kd, float ks);
+   PIDController(float kp, float ki, float initial_i, float kd, float ks);
    ~PIDController(){};
 
    float calculate_output(float input, float target, float dt);

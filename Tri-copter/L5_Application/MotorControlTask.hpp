@@ -123,7 +123,7 @@ private:
     static const int MOTOR_CONTROL_UPDATE = 20; //ms, we can update the motor control at most 50 times/sec
 
     //For timer purposes, so we can kill the power after a certain time
-    const static int MAX_SEC = 45;
+    const static int MAX_SEC = 500;
     const static int MIN_SEC = 10;
 
     //Maximum orientation angles before we kill the motors
